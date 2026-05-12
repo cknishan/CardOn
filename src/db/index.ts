@@ -1,3 +1,5 @@
+// src/db/index.ts
+
 import Dexie, { type Table } from 'dexie'
 import type { Deck, Card, StudySession } from '../types'
 

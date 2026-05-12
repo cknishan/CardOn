@@ -1,3 +1,5 @@
+// src/types/index.ts
+
 // Deck model
 export interface Deck {
   id: string;           // UUID
