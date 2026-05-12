@@ -1,6 +1,5 @@
-// src/App.tsx
-
 import { Routes, Route } from 'react-router-dom'
+import Layout from './components/Layout'
 import DashboardPage from './pages/DashboardPage'
 import DeckFormPage from './pages/DeckFormPage'
 import DeckDetailPage from './pages/DeckDetailPage'
@@ -12,18 +11,20 @@ import NotFoundPage from './pages/NotFoundPage'
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<DashboardPage />} />
-      <Route path="/settings" element={<SettingsPage />} />
-      <Route path="/decks/new" element={<DeckFormPage />} />
-      <Route path="/decks/:deckId" element={<DeckDetailPage />} />
-      <Route path="/decks/:deckId/edit" element={<DeckFormPage />} />
-      <Route path="/decks/:deckId/study" element={<StudySessionPage />} />
-      <Route path="/decks/:deckId/import" element={<ImportPage />} />
-      <Route path="/decks/:deckId/cards/new" element={<CardFormPage />} />
-      <Route path="/decks/:deckId/cards/:cardId/edit" element={<CardFormPage />} />
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+    <Layout>
+      <Routes>
+        <Route path="/" element={<DashboardPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/decks/new" element={<DeckFormPage />} />
+        <Route path="/decks/:deckId" element={<DeckDetailPage />} />
+        <Route path="/decks/:deckId/edit" element={<DeckFormPage />} />
+        <Route path="/decks/:deckId/study" element={<StudySessionPage />} />
+        <Route path="/decks/:deckId/import" element={<ImportPage />} />
+        <Route path="/decks/:deckId/cards/new" element={<CardFormPage />} />
+        <Route path="/decks/:deckId/cards/:cardId/edit" element={<CardFormPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </Layout>
   )
 }
 
