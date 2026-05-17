@@ -1,7 +1,25 @@
+/**
+ * @module Layout
+ * @description Root layout wrapper rendered around every page.
+ * Provides the top navigation bar with branding and a settings link,
+ * plus a centered content area.
+ *
+ * Route: rendered as a wrapper in App.tsx — no route of its own.
+ */
+
 import { Link } from 'react-router-dom'
 import type { ReactNode } from 'react'
 
-function Layout({ children }: { children?: ReactNode }) {
+interface LayoutProps {
+  /** Page content rendered inside the main area */
+  children?: ReactNode
+}
+
+/**
+ * Application shell with nav bar and main content slot.
+ * Uses Tailwind's `max-w-7xl` container centred with padding.
+ */
+function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen">
       <nav className="flex items-center justify-between border-b bg-white px-6 py-3">

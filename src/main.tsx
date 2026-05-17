@@ -1,4 +1,10 @@
-// src/main.tsx
+/**
+ * @module EntryPoint
+ * @description Application entry point.
+ * Mounts the React app into the DOM inside a BrowserRouter for client-side routing.
+ *
+ * @see {@link https://reactrouter.com/}
+ */
 
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'

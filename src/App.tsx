@@ -1,3 +1,21 @@
+/**
+ * @module App
+ * @description Root application component.
+ * Defines all routes using React Router v6 and wraps them in the shared Layout.
+ *
+ * Route structure:
+ * - `/` — Dashboard (deck list)
+ * - `/settings` — Settings & data management
+ * - `/decks/new` — Create a new deck
+ * - `/decks/:deckId` — Deck detail (card list)
+ * - `/decks/:deckId/edit` — Edit deck name
+ * - `/decks/:deckId/study` — Study session
+ * - `/decks/:deckId/import` — Markdown import
+ * - `/decks/:deckId/cards/new` — Add a new card
+ * - `/decks/:deckId/cards/:cardId/edit` — Edit an existing card
+ * - `*` — 404 fallback
+ */
+
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
 import DashboardPage from './pages/DashboardPage'
