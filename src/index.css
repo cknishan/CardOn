@@ -1,1 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --color-background: #f1f4f3;
+  --color-dark: #303543;
+  --color-primary: #3788ff;
+  --color-danger: #ed4f50;
+  --color-success: #22c27a;
+  --color-warning: #f5a623;
+  --color-accent: #a259ff;
+  --color-surface: #ffffff;
+  --color-border: #e0e4e3;
+  --color-muted: #888888;
+
+  --color-again-bg: #ffeaea;
+  --color-again-text: #c0392b;
+  --color-hard-bg: #fff4e5;
+  --color-hard-text: #b7680a;
+  --color-good-bg: #e6f4ea;
+  --color-good-text: #1a7a3c;
+  --color-easy-bg: #e8f0ff;
+  --color-easy-text: #1a5fd4;
+
+  --font-sans: 'Noto Sans', sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  --max-width-content: 1280px;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-dark);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
