@@ -10,7 +10,7 @@
 
 import { useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getDeckById, getDueCardsByDeckId, mockCards } from '../utils/mockData'
+import { getDeckById, getDueCardsByDeckId } from '../utils/mockData'
 import type { Card } from '../types'
 
 /** The four possible ratings a user can assign during a study session. */
