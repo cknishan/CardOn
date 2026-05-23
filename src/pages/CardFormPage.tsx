@@ -41,7 +41,7 @@ function CardFormPage() {
    * Validates required fields and saves (creates or updates) the card.
    * Redirects to deck detail on success.
    */
-  function handleSubmit(e: React.FormEvent) {
+ function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const newErrors: { question?: string; answer?: string } = {}
     if (!question.trim()) newErrors.question = 'Question is required'
@@ -53,11 +53,17 @@ function CardFormPage() {
 
     const today = new Date().toISOString().split('T')[0]
     if (isEdit && existing) {
-      existing.question = question.trim()
-      existing.answer = answer.trim()
-      existing.hint = hint.trim() || null
-      existing.note = note.trim() || null
-      existing.updatedAt = new Date().toISOString()
+      const idx = mockCards.findIndex(c => c.id === cardId)
+      if (idx !== -1) {
+        mockCards[idx] = {
+          ...existing,
+          question: question.trim(),
+          answer: answer.trim(),
+          hint: hint.trim() || null,
+          note: note.trim() || null,
+          updatedAt: new Date().toISOString(),
+        }
+      }
     } else {
       mockCards.push({
         id: generateId(),

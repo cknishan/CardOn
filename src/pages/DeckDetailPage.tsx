@@ -135,10 +135,10 @@ function DeckDetailPage() {
                 <tbody>
                   {cards.map(card => (
                     <tr key={card.id} className="border-b border-border last:border-0 hover:bg-background/50 transition">
-                      <td className="px-5 py-4 max-w-[200px] truncate font-medium text-dark">
+                      <td className="px-5 py-4 max-w-50 truncate font-medium text-dark">
                         {card.question}
                       </td>
-                      <td className="px-5 py-4 max-w-[200px] truncate text-muted">
+                      <td className="px-5 py-4 max-w-50 truncate text-muted">
                         {card.answer}
                       </td>
                       <td className="px-5 py-4">

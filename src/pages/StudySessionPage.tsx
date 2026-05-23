@@ -8,7 +8,7 @@
  * card's interval, ease factor, and due date.
  */
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getDeckById, getDueCardsByDeckId } from '../utils/mockData'
 import type { Card } from '../types'
@@ -75,7 +75,10 @@ function StudySessionPage() {
   const navigate = useNavigate()
 
   const deck = deckId ? getDeckById(deckId) : undefined
-  const dueCards = deckId ? getDueCardsByDeckId(deckId) : []
+ const dueCards = useMemo(
+  () => (deckId ? getDueCardsByDeckId(deckId) : []),
+  [deckId]
+)
 
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showAnswer, setShowAnswer] = useState(false)
