@@ -71,3 +71,8 @@ export interface StudySession {
   /** Number of cards rated "Easy" */
   easyCount: number
 }
+
+/**
+ * The four possible ratings a user can assign during a study session.
+ */
+export type Rating = 'again' | 'hard' | 'good' | 'easy'

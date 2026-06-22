@@ -12,7 +12,7 @@ import { useState, useCallback, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getDeckById, getDueCardsByDeckId } from '../utils/mockData'
 import { applySM2, RATINGS } from '../utils/sm2'
-import type { Rating } from '../utils/sm2'
+import type { Rating, RatingConfig } from '../utils/sm2'
 import type { Card } from '../types'
 
 function StudySessionPage() {
