@@ -10,96 +10,8 @@
 import { useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getDeckById, mockCards, generateId } from '../utils/mockData'
-
-/** A single card parsed from a markdown import file. */
-interface ParsedCard {
-  question: string
-  answer: string
-  hint: string | null
-  note: string | null
-  /** Human-readable errors encountered during parsing */
-  errors: string[]
-}
-
-/**
- * Parses a markdown-formatted string into an array of ParsedCard objects.
- *
- * Syntax:
- * ```
- * Q: Question text
- * A: Answer text
- * Hint: Optional hint
- * Note: Optional note
- * ```
- * Blank lines separate cards. Lines not starting with Q:/A:/Hint:/Note: are ignored.
- *
- * @param text - Raw file content
- * @returns Array of parsed cards (invalid cards carry an errors array)
- */
-function parseMarkdown(text: string): ParsedCard[] {
-  const lines = text.split('\n')
-  const cards: ParsedCard[] = []
-  let current: Partial<ParsedCard> & { errors: string[] } = { errors: [] }
-  let inCard = false
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]
-    const trimmed = line.trim()
-
-    if (trimmed === '') {
-      if (inCard) {
-        if (!current.question || !current.answer) {
-          current.errors.push(`Missing Q or A at line ~${i + 1}`)
-          current.question = current.question || '(missing)'
-          current.answer = current.answer || '(missing)'
-        }
-        cards.push(current as ParsedCard)
-        current = { errors: [] }
-        inCard = false
-      }
-      continue
-    }
-
-    if (trimmed.startsWith('Q:')) {
-      if (inCard) {
-        if (!current.question || !current.answer) {
-          current.errors.push('Missing Q or A')
-          current.question = current.question || '(missing)'
-          current.answer = current.answer || '(missing)'
-        }
-        cards.push(current as ParsedCard)
-        current = { errors: [] }
-      }
-      inCard = true
-      current.question = trimmed.substring(2).trim()
-    } else if (trimmed.startsWith('A:')) {
-      if (!inCard) {
-        current.errors.push(`Line ${i + 1}: A: without preceding Q:`)
-        continue
-      }
-      current.answer = trimmed.substring(2).trim()
-    } else if (trimmed.startsWith('Hint:')) {
-      if (!current.hint && current.answer) {
-        current.hint = trimmed.substring(5).trim()
-      }
-    } else if (trimmed.startsWith('Note:')) {
-      if (!current.note && current.answer) {
-        current.note = trimmed.substring(5).trim()
-      }
-    }
-  }
-
-  if (inCard) {
-    if (!current.question || !current.answer) {
-      current.errors.push('Missing Q or A at end of file')
-      current.question = current.question || '(missing)'
-      current.answer = current.answer || '(missing)'
-    }
-    cards.push(current as ParsedCard)
-  }
-
-  return cards
-}
+import { parseMarkdown } from '../utils/markdownParser'
+import type { ParsedCard } from '../utils/markdownParser'
 
 function ImportPage() {
   const { deckId } = useParams<{ deckId: string }>()
@@ -119,7 +31,10 @@ function ImportPage() {
       <div className="flex flex-col items-center justify-center py-32 text-center">
         <div className="text-5xl mb-4">🔍</div>
         <h2 className="text-lg font-semibold text-dark mb-2">Deck not found</h2>
-        <button onClick={() => navigate('/')} className="text-primary text-sm font-medium hover:underline">
+        <button
+          onClick={() => navigate('/')}
+          className="text-primary text-sm font-medium hover:underline"
+        >
           Back to Dashboard
         </button>
       </div>
@@ -205,14 +120,23 @@ function ImportPage() {
           onClick={() => navigate(`/decks/${deckId}`)}
           className="text-sm text-muted hover:text-dark transition mb-4 flex items-center gap-1"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
           Back to {deck.name}
         </button>
 
         <h1 className="text-2xl font-bold text-dark mb-2">Import Cards from Markdown</h1>
         <p className="text-sm text-muted mb-6">
           Upload a <code className="bg-border/50 px-1.5 py-0.5 rounded text-xs">.md</code> or{' '}
-          <code className="bg-border/50 px-1.5 py-0.5 rounded text-xs">.txt</code> file with cards formatted using Q:, A:, Hint:, Note: syntax.
+          <code className="bg-border/50 px-1.5 py-0.5 rounded text-xs">.txt</code> file with cards
+          formatted using Q:, A:, Hint:, Note: syntax.
         </p>
 
         {/* File upload area */}
@@ -244,11 +168,16 @@ function ImportPage() {
             </h2>
             <div className="space-y-2 max-h-60 overflow-y-auto">
               {parsedCards.map((card, i) => (
-                <div key={i} className={`text-xs p-3 rounded-lg ${card.errors.length > 0 ? 'bg-again-bg' : 'bg-good-bg'}`}>
+                <div
+                  key={i}
+                  className={`text-xs p-3 rounded-lg ${card.errors.length > 0 ? 'bg-again-bg' : 'bg-good-bg'}`}
+                >
                   <div className="flex items-start justify-between gap-2">
                     <span className="font-medium">Q: {card.question}</span>
                     {card.errors.length > 0 && (
-                      <span className="text-again-text shrink-0 ml-2">{card.errors.join('; ')}</span>
+                      <span className="text-again-text shrink-0 ml-2">
+                        {card.errors.join('; ')}
+                      </span>
                     )}
                   </div>
                   <span className="text-muted">A: {card.answer}</span>
@@ -263,7 +192,10 @@ function ImportPage() {
                 Import {parsedCards.length} card{parsedCards.length !== 1 ? 's' : ''}
               </button>
               <button
-                onClick={() => { setParsedCards([]); setFileName('') }}
+                onClick={() => {
+                  setParsedCards([])
+                  setFileName('')
+                }}
                 className="flex-1 border border-border text-dark py-2.5 rounded-xl text-sm font-medium hover:bg-background transition"
               >
                 Cancel
@@ -282,11 +214,14 @@ function ImportPage() {
             {errorCards.length > 0 && (
               <div className="mt-3 text-left">
                 <p className="text-sm font-medium text-again-text mb-2">
-                  {errorCards.length} card{errorCards.length !== 1 ? 's' : ''} skipped due to errors:
+                  {errorCards.length} card{errorCards.length !== 1 ? 's' : ''} skipped due to
+                  errors:
                 </p>
                 <div className="space-y-1.5 max-h-32 overflow-y-auto">
                   {errorCards.map((card, i) => (
-                    <p key={i} className="text-xs text-muted">Q: {card.question} — {card.errors.join('; ')}</p>
+                    <p key={i} className="text-xs text-muted">
+                      Q: {card.question} — {card.errors.join('; ')}
+                    </p>
                   ))}
                 </div>
               </div>
