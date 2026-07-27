@@ -1,30 +1,28 @@
-/**
- * ImportPage
- *
- * Route: `/decks/:deckId/import`
- * Description: Allows users to upload a `.md` or `.txt` file containing cards
- * formatted with the Q:/A:/Hint:/Note: syntax. Cards are parsed, previewed,
- * and then bulk-imported into the current deck.
- */
-
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getDeckById, mockCards, generateId } from '../utils/mockData'
+import { db } from '../db'
+import { getDeckById } from '../db/queries'
 import { parseMarkdown } from '../utils/markdownParser'
+
 import type { ParsedCard } from '../utils/markdownParser'
+import type { Deck } from '../types'
 
 function ImportPage() {
   const { deckId } = useParams<{ deckId: string }>()
   const navigate = useNavigate()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const deck = deckId ? getDeckById(deckId) : undefined
-
+  const [deck, setDeck] = useState<Deck | undefined>()
   const [parsedCards, setParsedCards] = useState<ParsedCard[]>([])
   const [fileName, setFileName] = useState('')
   const [imported, setImported] = useState(false)
   const [successCount, setSuccessCount] = useState(0)
   const [errorCards, setErrorCards] = useState<ParsedCard[]>([])
+
+  useEffect(() => {
+    if (!deckId) return
+    getDeckById(deckId).then(setDeck)
+  }, [deckId])
 
   if (!deck) {
     return (
@@ -41,7 +39,6 @@ function ImportPage() {
     )
   }
 
-  /** Reads a selected file and parses its content into card previews. */
   function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
@@ -57,7 +54,6 @@ function ImportPage() {
     reader.readAsText(file)
   }
 
-  /** Handles files dropped onto the upload zone. */
   function handleDrop(e: React.DragEvent) {
     e.preventDefault()
     const file = e.dataTransfer.files?.[0]
@@ -73,21 +69,18 @@ function ImportPage() {
     reader.readAsText(file)
   }
 
-  /**
-   * Confirms the import: valid cards are pushed into mockCards,
-   * invalid ones are reported as errors.
-   */
-  function handleImport() {
+  async function handleImport() {
     let success = 0
     const errors: ParsedCard[] = []
+    const toAdd: Parameters<typeof db.cards.bulkAdd>[0] = []
 
     for (const card of parsedCards) {
       if (card.errors.length > 0 || card.question === '(missing)' || card.answer === '(missing)') {
         errors.push(card)
         continue
       }
-      mockCards.push({
-        id: generateId(),
+      toAdd.push({
+        id: crypto.randomUUID(),
         deckId: deckId!,
         question: card.question,
         answer: card.answer,
@@ -103,6 +96,10 @@ function ImportPage() {
       success++
     }
 
+    if (toAdd.length > 0) {
+      await db.cards.bulkAdd(toAdd)
+    }
+
     setSuccessCount(success)
     setErrorCards(errors)
     setImported(true)
@@ -115,7 +112,6 @@ function ImportPage() {
   return (
     <div className="min-h-screen bg-background px-4 py-8">
       <div className="mx-auto max-w-2xl">
-        {/* Breadcrumb */}
         <button
           onClick={() => navigate(`/decks/${deckId}`)}
           className="text-sm text-muted hover:text-dark transition mb-4 flex items-center gap-1"
@@ -139,7 +135,6 @@ function ImportPage() {
           formatted using Q:, A:, Hint:, Note: syntax.
         </p>
 
-        {/* File upload area */}
         <div
           onDrop={handleDrop}
           onDragOver={handleDragOver}
@@ -160,7 +155,6 @@ function ImportPage() {
           <p className="text-xs text-muted">Supports .md and .txt files</p>
         </div>
 
-        {/* Preview */}
         {parsedCards.length > 0 && !imported && (
           <div className="mt-6 bg-surface rounded-xl border border-border p-5">
             <h2 className="text-sm font-semibold text-dark mb-3">
@@ -204,7 +198,6 @@ function ImportPage() {
           </div>
         )}
 
-        {/* Success result */}
         {imported && (
           <div className="mt-6 bg-surface rounded-xl border border-border p-6 text-center">
             <div className="text-4xl mb-3">✅</div>
