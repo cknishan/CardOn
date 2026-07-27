@@ -4,7 +4,7 @@ import { db } from '../db'
 import { getDeckById } from '../db/queries'
 import { parseMarkdown } from '../utils/markdownParser'
 import type { ParsedCard } from '../utils/markdownParser'
-import type { Deck } from '../types'
+import type { Deck, Card } from '../types'
 
 function ImportPage() {
   const { deckId } = useParams<{ deckId: string }>()
@@ -78,7 +78,7 @@ function ImportPage() {
   async function handleImport() {
     let success = 0
     const errors: ParsedCard[] = []
-    const toAdd: Parameters<typeof db.cards.bulkAdd>[0] = []
+    const toAdd: Card[] = []
 
     for (const card of parsedCards) {
       if (card.errors.length > 0 || card.question === '(missing)' || card.answer === '(missing)') {

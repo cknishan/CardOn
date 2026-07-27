@@ -23,8 +23,9 @@ function StudySessionPage() {
 
   useEffect(() => {
     if (!deckId) return
+    const id = deckId
     async function load() {
-      const [d, c] = await Promise.all([getDeckById(deckId), getDueCardsByDeckId(deckId)])
+      const [d, c] = await Promise.all([getDeckById(id), getDueCardsByDeckId(id)])
       setDeck(d)
       setDueCards(c)
     }
