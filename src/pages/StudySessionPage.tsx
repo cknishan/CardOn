@@ -1,27 +1,17 @@
-/**
- * StudySessionPage
- *
- * Route: `/decks/:deckId/study`
- * Description: Spaced-repetition study session. Shows due cards one at a time.
- * User can toggle hint/note, reveal the answer, then rate their recall
- * (Again / Hard / Good / Easy). The SM-2 algorithm updates the card's
- * interval, ease factor, and due date via the shared utility.
- */
-
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getDeckById, getDueCardsByDeckId } from '../utils/mockData'
+import { db } from '../db'
+import { getDeckById, getDueCardsByDeckId } from '../db/queries'
 import { applySM2, RATINGS } from '../utils/sm2'
 import type { Rating, RatingConfig } from '../utils/sm2'
-import type { Card } from '../types'
+import type { Card, Deck } from '../types'
 
 function StudySessionPage() {
   const { deckId } = useParams<{ deckId: string }>()
   const navigate = useNavigate()
 
-  const deck = deckId ? getDeckById(deckId) : undefined
-  const dueCards = useMemo(() => (deckId ? getDueCardsByDeckId(deckId) : []), [deckId])
-
+  const [deck, setDeck] = useState<Deck | undefined>()
+  const [dueCards, setDueCards] = useState<Card[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showAnswer, setShowAnswer] = useState(false)
   const [showHint, setShowHint] = useState(false)
@@ -31,7 +21,16 @@ function StudySessionPage() {
   const [sessionComplete, setSessionComplete] = useState(false)
   const [reviewedCount, setReviewedCount] = useState(0)
 
-  /** Initializes a new study session with all currently due cards. */
+  useEffect(() => {
+    if (!deckId) return
+    async function load() {
+      const [d, c] = await Promise.all([getDeckById(deckId), getDueCardsByDeckId(deckId)])
+      setDeck(d)
+      setDueCards(c)
+    }
+    load()
+  }, [deckId])
+
   const startSession = useCallback(() => {
     setSessionCards([...dueCards])
     setSessionStarted(true)
@@ -43,14 +42,10 @@ function StudySessionPage() {
     setReviewedCount(0)
   }, [dueCards])
 
-  /**
-   * Applies the user's rating to the current card, advances to the next,
-   * or finishes the session if all cards have been reviewed.
-   */
-  function handleRate(rating: Rating) {
+  async function handleRate(rating: Rating) {
     const card = sessionCards[currentIndex]
     const updated = applySM2(card, rating)
-    Object.assign(card, updated)
+    await db.cards.update(card.id, { ...updated, updatedAt: new Date().toISOString() })
 
     const nextIndex = currentIndex + 1
     setReviewedCount((prev) => prev + 1)
@@ -152,7 +147,6 @@ function StudySessionPage() {
   return (
     <div className="min-h-screen bg-background px-4 py-8">
       <div className="mx-auto max-w-2xl">
-        {/* Progress bar */}
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={() => navigate(-1)}
@@ -171,14 +165,11 @@ function StudySessionPage() {
           />
         </div>
 
-        {/* Card */}
         <div className="bg-surface rounded-xl border border-border p-8 sm:p-10">
-          {/* Question */}
           <div className="text-lg sm:text-xl font-semibold text-dark mb-2 leading-relaxed">
             {card.question}
           </div>
 
-          {/* Extra fields (hint/note toggle) */}
           <div className="flex gap-2 mb-6">
             {card.hint && (
               <button
@@ -216,7 +207,6 @@ function StudySessionPage() {
             </div>
           )}
 
-          {/* Answer area */}
           {!showAnswer ? (
             <button
               onClick={() => setShowAnswer(true)}
@@ -233,7 +223,6 @@ function StudySessionPage() {
                 </div>
               </div>
 
-              {/* Rating buttons */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8">
                 {(Object.entries(RATINGS) as [Rating, RatingConfig][]).map(([key, config]) => (
                   <button
