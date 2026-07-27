@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { db } from '../db'
 import { getDeckById } from '../db/queries'
 import { parseMarkdown } from '../utils/markdownParser'
-
 import type { ParsedCard } from '../utils/markdownParser'
 import type { Deck } from '../types'
 
@@ -13,6 +12,8 @@ function ImportPage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [deck, setDeck] = useState<Deck | undefined>()
+  const [activeTab, setActiveTab] = useState<'paste' | 'file'>('paste')
+  const [pastedText, setPastedText] = useState('')
   const [parsedCards, setParsedCards] = useState<ParsedCard[]>([])
   const [fileName, setFileName] = useState('')
   const [imported, setImported] = useState(false)
@@ -39,10 +40,15 @@ function ImportPage() {
     )
   }
 
+  function handleParseText() {
+    const cards = parseMarkdown(pastedText)
+    setParsedCards(cards)
+    setImported(false)
+  }
+
   function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-
     setFileName(file.name)
     const reader = new FileReader()
     reader.onload = (ev) => {
@@ -109,6 +115,13 @@ function ImportPage() {
     e.preventDefault()
   }
 
+  function handleReset() {
+    setParsedCards([])
+    setPastedText('')
+    setFileName('')
+    setImported(false)
+  }
+
   return (
     <div className="min-h-screen bg-background px-4 py-8">
       <div className="mx-auto max-w-2xl">
@@ -128,32 +141,84 @@ function ImportPage() {
           Back to {deck.name}
         </button>
 
-        <h1 className="text-2xl font-bold text-dark mb-2">Import Cards from Markdown</h1>
+        <h1 className="text-2xl font-bold text-dark mb-2">Import Cards</h1>
         <p className="text-sm text-muted mb-6">
-          Upload a <code className="bg-border/50 px-1.5 py-0.5 rounded text-xs">.md</code> or{' '}
-          <code className="bg-border/50 px-1.5 py-0.5 rounded text-xs">.txt</code> file with cards
-          formatted using Q:, A:, Hint:, Note: syntax.
+          Paste markdown text or upload a file using{' '}
+          <code className="bg-border/50 px-1.5 py-0.5 rounded text-xs">Q:</code>,{' '}
+          <code className="bg-border/50 px-1.5 py-0.5 rounded text-xs">A:</code>,{' '}
+          <code className="bg-border/50 px-1.5 py-0.5 rounded text-xs">Hint:</code>,{' '}
+          <code className="bg-border/50 px-1.5 py-0.5 rounded text-xs">Note:</code> syntax.
         </p>
 
-        <div
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onClick={() => fileInputRef.current?.click()}
-          className="bg-surface border-2 border-dashed border-border rounded-xl p-12 text-center cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition"
-        >
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".md,.txt"
-            onChange={handleFileUpload}
-            className="hidden"
-          />
-          <div className="text-4xl mb-3">📄</div>
-          <p className="text-sm font-medium text-dark mb-1">
-            {fileName || 'Drop your file here, or click to browse'}
-          </p>
-          <p className="text-xs text-muted">Supports .md and .txt files</p>
+        <div className="flex gap-2 mb-5">
+          <button
+            onClick={() => {
+              setActiveTab('paste')
+              handleReset()
+            }}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+              activeTab === 'paste'
+                ? 'bg-dark text-white'
+                : 'bg-surface border border-border text-muted hover:text-dark'
+            }`}
+          >
+            Paste Text
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab('file')
+              handleReset()
+            }}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+              activeTab === 'file'
+                ? 'bg-dark text-white'
+                : 'bg-surface border border-border text-muted hover:text-dark'
+            }`}
+          >
+            Upload File
+          </button>
         </div>
+
+        {activeTab === 'paste' && !imported && (
+          <div>
+            <textarea
+              value={pastedText}
+              onChange={(e) => setPastedText(e.target.value)}
+              placeholder={`Q: What is 2 + 2?\nA: 4\nHint: Think of pairs\n\nQ: Capital of France?\nA: Paris`}
+              rows={10}
+              className="w-full border border-border rounded-xl px-4 py-3 text-sm text-dark placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none font-mono"
+            />
+            <button
+              onClick={handleParseText}
+              disabled={!pastedText.trim()}
+              className="mt-3 w-full bg-dark text-white py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition disabled:opacity-40"
+            >
+              Parse Cards
+            </button>
+          </div>
+        )}
+
+        {activeTab === 'file' && !imported && (
+          <div
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onClick={() => fileInputRef.current?.click()}
+            className="bg-surface border-2 border-dashed border-border rounded-xl p-12 text-center cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition"
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".md,.txt"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+            <div className="text-4xl mb-3">📄</div>
+            <p className="text-sm font-medium text-dark mb-1">
+              {fileName || 'Drop your file here, or click to browse'}
+            </p>
+            <p className="text-xs text-muted">Supports .md and .txt files</p>
+          </div>
+        )}
 
         {parsedCards.length > 0 && !imported && (
           <div className="mt-6 bg-surface rounded-xl border border-border p-5">
@@ -186,10 +251,7 @@ function ImportPage() {
                 Import {parsedCards.length} card{parsedCards.length !== 1 ? 's' : ''}
               </button>
               <button
-                onClick={() => {
-                  setParsedCards([])
-                  setFileName('')
-                }}
+                onClick={handleReset}
                 className="flex-1 border border-border text-dark py-2.5 rounded-xl text-sm font-medium hover:bg-background transition"
               >
                 Cancel
