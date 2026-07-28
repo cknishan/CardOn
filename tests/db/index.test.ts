@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto'
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { FlashCardDatabase } from '../../src/db/index'
-import type { Deck, Card, StudySession } from '../../src/types'
+import { FlashCardDatabase } from '../../src/database/dexie'
+import type { Deck, Flashcard, StudySession } from '../../src/models'
 
 let db: FlashCardDatabase
 
@@ -11,11 +11,12 @@ function deck(overrides: Partial<Deck> = {}): Deck {
     name: 'Test Deck',
     createdAt: '2024-01-15',
     updatedAt: '2024-01-15',
+    deletedAt: null,
     ...overrides,
   }
 }
 
-function card(overrides: Partial<Card> = {}): Card {
+function card(overrides: Partial<Flashcard> = {}): Flashcard {
   return {
     id: 'card-1',
     deckId: 'deck-1',
@@ -29,6 +30,7 @@ function card(overrides: Partial<Card> = {}): Card {
     dueDate: '2024-01-15',
     createdAt: '2024-01-15',
     updatedAt: '2024-01-15',
+    deletedAt: null,
     ...overrides,
   }
 }
@@ -44,6 +46,7 @@ function session(overrides: Partial<StudySession> = {}): StudySession {
     hardCount: 1,
     goodCount: 5,
     easyCount: 2,
+    deletedAt: null,
     ...overrides,
   }
 }

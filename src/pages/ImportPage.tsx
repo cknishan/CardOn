@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { db } from '../db'
+import { db } from '../database/dexie'
 import { getDeckById } from '../db/queries'
 import { parseMarkdown } from '../utils/markdownParser'
 import type { ParsedCard } from '../utils/markdownParser'
-import type { Deck, Card } from '../types'
+import type { Deck, Flashcard } from '../models'
 
 function ImportPage() {
   const { deckId } = useParams<{ deckId: string }>()
@@ -78,7 +78,7 @@ function ImportPage() {
   async function handleImport() {
     let success = 0
     const errors: ParsedCard[] = []
-    const toAdd: Card[] = []
+    const toAdd: Flashcard[] = []
 
     for (const card of parsedCards) {
       if (card.errors.length > 0 || card.question === '(missing)' || card.answer === '(missing)') {
@@ -98,6 +98,7 @@ function ImportPage() {
         dueDate: new Date().toISOString().split('T')[0],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        deletedAt: null,
       })
       success++
     }

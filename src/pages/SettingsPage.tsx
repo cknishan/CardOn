@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { db } from '../db'
+import { db } from '../database/dexie'
 
 function SettingsPage() {
   const navigate = useNavigate()

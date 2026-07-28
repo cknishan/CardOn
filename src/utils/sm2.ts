@@ -8,7 +8,7 @@
  * Reference: https://www.supermemo.com/en/blog/application-of-a-computer-to-improve-the-work-of-education
  */
 
-import type { Card } from '../types'
+import type { Flashcard } from '../models'
 
 /**
  * The four possible ratings a user can assign during a study session.
@@ -65,7 +65,7 @@ export interface SM2Result {
  * @param rating - User's self-assessed recall quality
  * @returns Updated SM-2 fields (does not mutate the input card)
  */
-export function applySM2(card: Card, rating: Rating): SM2Result {
+export function applySM2(card: Flashcard, rating: Rating): SM2Result {
   let interval = card.interval
   let repetitions = card.repetitions
   let easeFactor = card.easeFactor
