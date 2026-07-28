@@ -1,22 +1,22 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { db } from '../db'
+import { db } from '../database/dexie'
 import { getDeckById, getDueCardsByDeckId } from '../db/queries'
 import { applySM2, RATINGS } from '../utils/sm2'
 import type { Rating, RatingConfig } from '../utils/sm2'
-import type { Card, Deck } from '../types'
+import type { Flashcard, Deck } from '../models'
 
 function StudySessionPage() {
   const { deckId } = useParams<{ deckId: string }>()
   const navigate = useNavigate()
 
   const [deck, setDeck] = useState<Deck | undefined>()
-  const [dueCards, setDueCards] = useState<Card[]>([])
+  const [dueCards, setDueCards] = useState<Flashcard[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showAnswer, setShowAnswer] = useState(false)
   const [showHint, setShowHint] = useState(false)
   const [showNote, setShowNote] = useState(false)
-  const [sessionCards, setSessionCards] = useState<Card[]>([])
+  const [sessionCards, setSessionCards] = useState<Flashcard[]>([])
   const [sessionStarted, setSessionStarted] = useState(false)
   const [sessionComplete, setSessionComplete] = useState(false)
   const [reviewedCount, setReviewedCount] = useState(0)

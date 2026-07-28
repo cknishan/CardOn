@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import type { Deck } from '../types'
+import type { Deck } from '../models'
 
 interface DeckCardProps {
   deck: Deck

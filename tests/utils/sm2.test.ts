@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { applySM2 } from '../../src/utils/sm2'
-import type { Card, Rating } from '../../src/types'
+import type { Flashcard } from '../../src/models'
+import type { Rating } from '../../src/utils/sm2'
 
-function createCard(overrides: Partial<Card> = {}): Card {
+function createCard(overrides: Partial<Flashcard> = {}): Flashcard {
   return {
     id: 'test-id',
     deckId: 'test-deck',
@@ -16,6 +17,7 @@ function createCard(overrides: Partial<Card> = {}): Card {
     dueDate: '2024-01-15',
     createdAt: '2024-01-15',
     updatedAt: '2024-01-15',
+    deletedAt: null,
     ...overrides,
   }
 }

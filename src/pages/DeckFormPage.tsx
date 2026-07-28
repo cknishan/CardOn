@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { db } from '../db'
+import { db } from '../database/dexie'
 import { getDeckById } from '../db/queries'
-
-import type { Deck } from '../types'
+import type { Deck } from '../models'
 
 function DeckFormPage() {
   const { deckId } = useParams()
@@ -43,6 +42,7 @@ function DeckFormPage() {
         name: trimmed,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        deletedAt: null,
       })
     }
     navigate('/')

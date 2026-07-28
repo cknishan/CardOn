@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { db } from '../db'
+import { db } from '../database/dexie'
 import { getDeckById } from '../db/queries'
-
-import type { Deck, Card } from '../types'
+import type { Deck, Flashcard } from '../models'
 
 function CardFormPage() {
   const { deckId, cardId } = useParams<{ deckId: string; cardId: string }>()
   const navigate = useNavigate()
 
   const [deck, setDeck] = useState<Deck | undefined>()
-  const [existing, setExisting] = useState<Card | null>(null)
+  const [existing, setExisting] = useState<Flashcard | null>(null)
   const [question, setQuestion] = useState('')
   const [answer, setAnswer] = useState('')
   const [hint, setHint] = useState('')
@@ -86,6 +85,7 @@ function CardFormPage() {
         dueDate: today,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        deletedAt: null,
       })
     }
 

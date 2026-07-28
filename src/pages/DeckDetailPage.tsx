@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { db } from '../db'
+import { db } from '../database/dexie'
 import { getDeckById, getCardsByDeckId, getDueCount } from '../db/queries'
-import type { Deck, Card } from '../types'
+import type { Deck, Flashcard } from '../models'
 
 function DeckDetailPage() {
   const { deckId } = useParams<{ deckId: string }>()
   const navigate = useNavigate()
 
   const [deck, setDeck] = useState<Deck | undefined>()
-  const [cards, setCards] = useState<Card[]>([])
+  const [cards, setCards] = useState<Flashcard[]>([])
   const [dueCount, setDueCount] = useState(0)
 
   useEffect(() => {
@@ -22,7 +22,7 @@ function DeckDetailPage() {
       setDeck(d)
       setCards(c)
       setDueCount(due)
-    if (!deckId) return
+      if (!deckId) return
     }
     load(deckId!)
   }, [deckId])

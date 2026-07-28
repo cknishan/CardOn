@@ -4,7 +4,7 @@ import { getAllDecks } from '../db/queries'
 import { getTotalCardsCount, getDueCount } from '../db/queries'
 import DeckCard from '../components/DeckCard'
 import EmptyState from '../components/EmptyState'
-import type { Deck } from '../types'
+import type { Deck } from '../models'
 
 interface DeckRow {
   deck: Deck
