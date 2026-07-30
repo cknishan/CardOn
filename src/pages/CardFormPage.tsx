@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { db } from '../database/dexie'
-import { getDeckById } from '../db/queries'
+import { DeckRepository } from '../repositories/DeckRepository'
+import { FlashcardRepository } from '../repositories/FlashcardRepository'
 import type { Deck, Flashcard } from '../models'
 
 function CardFormPage() {
@@ -19,10 +19,10 @@ function CardFormPage() {
   useEffect(() => {
     if (!deckId) return
     async function load() {
-      const d = await getDeckById(deckId!)
+      const d = await DeckRepository.getById(deckId!)
       setDeck(d)
       if (cardId) {
-        const c = await db.cards.get(cardId!)
+        const c = await FlashcardRepository.getById(cardId!)
         setExisting(c ?? null)
         if (c) {
           setQuestion(c.question)
@@ -62,30 +62,20 @@ function CardFormPage() {
       return
     }
 
-    const today = new Date().toISOString().split('T')[0]
     if (isEdit && existing) {
-      await db.cards.update(existing.id, {
+      await FlashcardRepository.update(existing.id, {
         question: question.trim(),
         answer: answer.trim(),
         hint: hint.trim() || null,
         note: note.trim() || null,
-        updatedAt: new Date().toISOString(),
       })
     } else {
-      await db.cards.add({
-        id: crypto.randomUUID(),
+      await FlashcardRepository.create({
         deckId: deckId!,
         question: question.trim(),
         answer: answer.trim(),
         hint: hint.trim() || null,
         note: note.trim() || null,
-        interval: 0,
-        repetitions: 0,
-        easeFactor: 2.5,
-        dueDate: today,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        deletedAt: null,
       })
     }
 
@@ -95,7 +85,7 @@ function CardFormPage() {
   async function handleDelete() {
     if (!existing) return
     if (window.confirm('Delete this card?')) {
-      await db.cards.delete(existing.id)
+      await FlashcardRepository.hardDelete(existing.id)
       navigate(`/decks/${deckId}`)
     }
   }

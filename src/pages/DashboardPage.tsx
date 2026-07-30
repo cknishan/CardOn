@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getAllDecks } from '../db/queries'
-import { getTotalCardsCount, getDueCount } from '../db/queries'
+import { DeckRepository } from '../repositories/DeckRepository'
+import { FlashcardRepository } from '../repositories/FlashcardRepository'
 import DeckCard from '../components/DeckCard'
 import EmptyState from '../components/EmptyState'
 import type { Deck } from '../models'
@@ -18,12 +18,12 @@ function DashboardPage() {
 
   useEffect(() => {
     async function load() {
-      const decks = await getAllDecks()
+      const decks = await DeckRepository.getAll()
       const data = await Promise.all(
         decks.map(async (deck) => ({
           deck,
-          totalCards: await getTotalCardsCount(deck.id),
-          dueToday: await getDueCount(deck.id),
+          totalCards: await FlashcardRepository.getTotalCount(deck.id),
+          dueToday: await FlashcardRepository.getDueCount(deck.id),
         }))
       )
       setRows(data)

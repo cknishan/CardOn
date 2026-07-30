@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { db } from '../database/dexie'
-import { getDeckById } from '../db/queries'
+import { DeckRepository } from '../repositories/DeckRepository'
 import type { Deck } from '../models'
 
 function DeckFormPage() {
@@ -16,7 +15,7 @@ function DeckFormPage() {
   useEffect(() => {
     if (!deckId) return
     async function load() {
-      const d = await getDeckById(deckId!)
+      const d = await DeckRepository.getById(deckId!)
       setDeck(d)
       if (d) setName(d.name)
     }
@@ -35,23 +34,16 @@ function DeckFormPage() {
       return
     }
     if (isEdit) {
-      await db.decks.update(deckId, { name: trimmed, updatedAt: new Date().toISOString() })
+      await DeckRepository.update(deckId!, { name: trimmed })
     } else {
-      await db.decks.add({
-        id: crypto.randomUUID(),
-        name: trimmed,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        deletedAt: null,
-      })
+      await DeckRepository.create({ name: trimmed })
     }
     navigate('/')
   }
 
   async function handleDelete() {
     if (window.confirm('Delete this deck and all its cards?')) {
-      await db.cards.where('deckId').equals(deckId!).delete()
-      await db.decks.delete(deckId!)
+      await DeckRepository.hardDelete(deckId!)
       navigate('/')
     }
   }
