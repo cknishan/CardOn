@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { db } from '../database/dexie'
-import { getDeckById } from '../db/queries'
+import { DeckRepository } from '../repositories/DeckRepository'
+import { FlashcardRepository } from '../repositories/FlashcardRepository'
 import { parseMarkdown } from '../utils/markdownParser'
 import type { ParsedCard } from '../utils/markdownParser'
-import type { Deck, Flashcard } from '../models'
+import type { Deck } from '../models'
 
 function ImportPage() {
   const { deckId } = useParams<{ deckId: string }>()
@@ -22,7 +22,7 @@ function ImportPage() {
 
   useEffect(() => {
     if (!deckId) return
-    getDeckById(deckId).then(setDeck)
+    DeckRepository.getById(deckId).then(setDeck)
   }, [deckId])
 
   if (!deck) {
@@ -78,7 +78,13 @@ function ImportPage() {
   async function handleImport() {
     let success = 0
     const errors: ParsedCard[] = []
-    const toAdd: Flashcard[] = []
+    const toAdd: Array<{
+      deckId: string
+      question: string
+      answer: string
+      hint: string | null
+      note: string | null
+    }> = []
 
     for (const card of parsedCards) {
       if (card.errors.length > 0 || card.question === '(missing)' || card.answer === '(missing)') {
@@ -86,25 +92,17 @@ function ImportPage() {
         continue
       }
       toAdd.push({
-        id: crypto.randomUUID(),
         deckId: deckId!,
         question: card.question,
         answer: card.answer,
         hint: card.hint || null,
         note: card.note || null,
-        interval: 0,
-        repetitions: 0,
-        easeFactor: 2.5,
-        dueDate: new Date().toISOString().split('T')[0],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        deletedAt: null,
       })
       success++
     }
 
     if (toAdd.length > 0) {
-      await db.cards.bulkAdd(toAdd)
+      await FlashcardRepository.bulkAdd(toAdd)
     }
 
     setSuccessCount(success)

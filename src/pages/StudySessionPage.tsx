@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { db } from '../database/dexie'
-import { getDeckById, getDueCardsByDeckId } from '../db/queries'
+import { DeckRepository } from '../repositories/DeckRepository'
+import { FlashcardRepository } from '../repositories/FlashcardRepository'
 import { applySM2, RATINGS } from '../utils/sm2'
 import type { Rating, RatingConfig } from '../utils/sm2'
 import type { Flashcard, Deck } from '../models'
@@ -25,7 +25,10 @@ function StudySessionPage() {
     if (!deckId) return
     const id = deckId
     async function load() {
-      const [d, c] = await Promise.all([getDeckById(id), getDueCardsByDeckId(id)])
+      const [d, c] = await Promise.all([
+        DeckRepository.getById(id),
+        FlashcardRepository.getDueByDeckId(id),
+      ])
       setDeck(d)
       setDueCards(c)
     }
@@ -46,7 +49,7 @@ function StudySessionPage() {
   async function handleRate(rating: Rating) {
     const card = sessionCards[currentIndex]
     const updated = applySM2(card, rating)
-    await db.cards.update(card.id, { ...updated, updatedAt: new Date().toISOString() })
+    await FlashcardRepository.update(card.id, updated)
 
     const nextIndex = currentIndex + 1
     setReviewedCount((prev) => prev + 1)

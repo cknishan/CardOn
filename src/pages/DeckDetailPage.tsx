@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { db } from '../database/dexie'
-import { getDeckById, getCardsByDeckId, getDueCount } from '../db/queries'
+import { DeckRepository } from '../repositories/DeckRepository'
+import { FlashcardRepository } from '../repositories/FlashcardRepository'
 import type { Deck, Flashcard } from '../models'
 
 function DeckDetailPage() {
@@ -13,23 +13,24 @@ function DeckDetailPage() {
   const [dueCount, setDueCount] = useState(0)
 
   useEffect(() => {
-    async function load(id: string) {
+    if (!deckId) return
+    const id = deckId
+    async function load() {
       const [d, c, due] = await Promise.all([
-        getDeckById(id),
-        getCardsByDeckId(id),
-        getDueCount(id),
+        DeckRepository.getById(id),
+        FlashcardRepository.getByDeckId(id),
+        FlashcardRepository.getDueCount(id),
       ])
       setDeck(d)
       setCards(c)
       setDueCount(due)
-      if (!deckId) return
     }
-    load(deckId!)
+    load()
   }, [deckId])
 
   async function handleDeleteCard(cardId: string) {
     if (window.confirm('Delete this card?')) {
-      await db.cards.delete(cardId)
+      await FlashcardRepository.hardDelete(cardId)
       setCards((prev) => prev.filter((c) => c.id !== cardId))
     }
   }
