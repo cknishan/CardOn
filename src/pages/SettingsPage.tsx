@@ -1,9 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { db } from '../database/dexie'
+import { useAuth } from '../components/AuthContext'
+import { SyncService } from '../services/SyncService'
+import { supabaseProvider } from '../providers/SupabaseProvider'
 
 function SettingsPage() {
   const navigate = useNavigate()
+  const { user, isLoggedIn, login, logout } = useAuth()
+  const [syncState, setSyncState] = useState<'idle' | 'syncing'>('idle')
+  const [lastSynced, setLastSynced] = useState<string | null>(localStorage.getItem('lastSynced'))
   const [counts, setCounts] = useState({ decks: 0, cards: 0, sessions: 0 })
 
   useEffect(() => {
@@ -17,6 +23,29 @@ function SettingsPage() {
     }
     load()
   }, [])
+
+  async function handleSync() {
+    setSyncState('syncing')
+    try {
+      const sync = new SyncService(supabaseProvider)
+      await sync.push()
+      await sync.pullAndMerge()
+      const now = new Date().toISOString()
+      localStorage.setItem('lastSynced', now)
+      setLastSynced(now)
+
+      const [decks, cards, sessions] = await Promise.all([
+        db.decks.count(),
+        db.cards.count(),
+        db.studySessions.count(),
+      ])
+      setCounts({ decks, cards, sessions })
+    } catch (err) {
+      alert('Sync failed: ' + (err instanceof Error ? err.message : 'Unknown error'))
+    } finally {
+      setSyncState('idle')
+    }
+  }
 
   async function handleExport() {
     const [decks, cards, studySessions] = await Promise.all([
@@ -160,6 +189,80 @@ function SettingsPage() {
                 />
               </svg>
             </button>
+          </div>
+        </section>
+
+        <section className="bg-surface rounded-xl border border-border p-6 mb-5">
+          <h2 className="text-base font-semibold text-dark mb-4">Cloud Sync</h2>
+          <div className="space-y-3">
+            {isLoggedIn ? (
+              <>
+                <div className="flex items-center justify-between bg-background rounded-lg px-4 py-3">
+                  <div className="text-left">
+                    <p className="text-sm font-medium text-dark">Signed in as</p>
+                    <p className="text-xs text-muted">{user?.email}</p>
+                  </div>
+                  <button
+                    onClick={logout}
+                    className="text-sm text-danger hover:opacity-80 transition font-medium"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+                <button
+                  onClick={handleSync}
+                  disabled={syncState === 'syncing'}
+                  className="w-full flex items-center justify-between bg-background hover:bg-border/30 transition rounded-lg px-4 py-3 disabled:opacity-50"
+                >
+                  <div className="text-left">
+                    <p className="text-sm font-medium text-dark">
+                      {syncState === 'syncing' ? 'Syncing...' : 'Sync Now'}
+                    </p>
+                    <p className="text-xs text-muted">
+                      {lastSynced
+                        ? `Last synced: ${new Date(lastSynced).toLocaleString()}`
+                        : 'Upload and download your data'}
+                    </p>
+                  </div>
+                  <svg
+                    className={`w-5 h-5 text-muted ${syncState === 'syncing' ? 'animate-spin' : ''}`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
+                  </svg>
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={login}
+                className="w-full flex items-center justify-between bg-background hover:bg-border/30 transition rounded-lg px-4 py-3"
+              >
+                <div className="text-left">
+                  <p className="text-sm font-medium text-dark">Sign in with Google</p>
+                  <p className="text-xs text-muted">Sync your data across devices</p>
+                </div>
+                <svg
+                  className="w-5 h-5 text-muted"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
         </section>
 
