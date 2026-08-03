@@ -1,9 +1,12 @@
 import type { CloudProvider, CloudUser } from '../providers/CloudProvider'
 
 export class AuthService {
+  private provider: CloudProvider
   private listeners: Array<(user: CloudUser | null) => void> = []
 
-  constructor(private provider: CloudProvider) {}
+  constructor(provider: CloudProvider) {
+    this.provider = provider
+  }
 
   async login(): Promise<CloudUser> {
     const user = await this.provider.login()

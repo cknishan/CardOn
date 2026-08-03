@@ -1,11 +1,15 @@
 import { db } from '../database/dexie'
 import { DeckRepository } from '../repositories/DeckRepository'
 import { FlashcardRepository } from '../repositories/FlashcardRepository'
-import type { CloudProvider, SyncPayload } from '../providers/CloudProvider'
+import type { CloudProvider } from '../providers/CloudProvider'
 import type { Deck, Flashcard, StudySession } from '../models'
 
 export class SyncService {
-  constructor(private provider: CloudProvider) {}
+  private provider: CloudProvider
+
+  constructor(provider: CloudProvider) {
+    this.provider = provider
+  }
 
   async push(): Promise<void> {
     const [decks, flashcards, studySessions] = await Promise.all([
