@@ -78,13 +78,14 @@ export class SupabaseProvider implements CloudProvider {
     const flashcards = data.flashcards.map((c) => ({ ...c, user_id: user.id }))
     const studySessions = data.studySessions.map((s) => ({ ...s, user_id: user.id }))
 
-    const [deckResult, cardResult, sessionResult] = await Promise.all([
-      this.supabase.from('decks').upsert(decks),
+    const deckResult = await this.supabase.from('decks').upsert(decks)
+    if (deckResult.error) throw deckResult.error
+
+    const [cardResult, sessionResult] = await Promise.all([
       this.supabase.from('flashcards').upsert(flashcards),
       this.supabase.from('study_sessions').upsert(studySessions),
     ])
 
-    if (deckResult.error) throw deckResult.error
     if (cardResult.error) throw cardResult.error
     if (sessionResult.error) throw sessionResult.error
   }
