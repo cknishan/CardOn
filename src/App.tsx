@@ -5,6 +5,7 @@
  *
  * Route structure:
  * - `/` — Dashboard (deck list)
+ * - `/account` — Account & sign-in state
  * - `/settings` — Settings & data management
  * - `/decks/new` — Create a new deck
  * - `/decks/:deckId` — Deck detail (card list)
@@ -27,6 +28,7 @@ import CardFormPage from './pages/CardFormPage'
 import ImportPage from './pages/ImportPage'
 import StudySessionPage from './pages/StudySessionPage'
 import SettingsPage from './pages/SettingsPage'
+import AccountPage from './pages/AccountPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 function App() {
@@ -35,6 +37,7 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<DashboardPage />} />
+          <Route path="/account" element={<AccountPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/decks/new" element={<DeckFormPage />} />
           <Route path="/decks/:deckId" element={<DeckDetailPage />} />

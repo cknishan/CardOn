@@ -39,7 +39,7 @@ export class SupabaseProvider implements CloudProvider {
   async login(): Promise<CloudUser> {
     const { error } = await this.supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin },
+      options: { redirectTo: window.location.href },
     })
     if (error) throw error
 
