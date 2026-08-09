@@ -12,9 +12,10 @@ export interface CloudUser {
 }
 
 export interface CloudProvider {
-  login(): Promise<CloudUser>
+  login(): Promise<void>
   logout(): Promise<void>
   getUser(): CloudUser | null
+  onAuthChange(callback: (user: CloudUser | null) => void): () => void
   uploadAll(data: SyncPayload): Promise<void>
   downloadAll(): Promise<SyncPayload>
 }

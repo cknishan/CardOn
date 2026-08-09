@@ -17,12 +17,11 @@ interface AuthProviderProps {
 }
 
 function AuthProvider({ children, provider }: AuthProviderProps) {
-  const auth = new AuthService(provider)
-  const [user, setUser] = useState<CloudUser | null>(auth.getUser())
+  const [auth] = useState(() => new AuthService(provider))
+  const [user, setUser] = useState<CloudUser | null>(() => auth.getUser())
 
   useEffect(() => {
-    const unsub = auth.onAuthChange(setUser)
-    return unsub
+    return auth.onAuthChange(setUser)
   }, [auth])
 
   const login = async () => {
