@@ -4,6 +4,7 @@ import type { CloudProvider, CloudUser, SyncPayload } from './CloudProvider'
 export class SupabaseProvider implements CloudProvider {
   private supabase: SupabaseClient
   private currentUser: CloudUser | null = null
+  private authListeners: Array<(user: CloudUser | null) => void> = []
 
   constructor() {
     const url = import.meta.env.VITE_SUPABASE_URL
@@ -21,7 +22,22 @@ export class SupabaseProvider implements CloudProvider {
       this.currentUser = session?.user
         ? { id: session.user.id, email: session.user.email ?? '' }
         : null
+      this.notifyAuthListeners(this.currentUser)
     })
+  }
+
+  onAuthChange(callback: (user: CloudUser | null) => void): () => void {
+    this.authListeners.push(callback)
+    callback(this.currentUser)
+    return () => {
+      this.authListeners = this.authListeners.filter((l) => l !== callback)
+    }
+  }
+
+  private notifyAuthListeners(user: CloudUser | null) {
+    for (const listener of this.authListeners) {
+      listener(user)
+    }
   }
 
   private async ensureUser(): Promise<CloudUser> {
@@ -36,35 +52,18 @@ export class SupabaseProvider implements CloudProvider {
     throw new Error('Not authenticated')
   }
 
-  async login(): Promise<CloudUser> {
+  async login(): Promise<void> {
     const { error } = await this.supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: window.location.href },
     })
     if (error) throw error
-
-    if (this.currentUser) return this.currentUser
-
-    return new Promise<CloudUser>((resolve) => {
-      const {
-        data: { subscription },
-      } = this.supabase.auth.onAuthStateChange((event, session) => {
-        if (event === 'SIGNED_IN' && session?.user) {
-          subscription.unsubscribe()
-          const user: CloudUser = {
-            id: session.user.id,
-            email: session.user.email ?? '',
-          }
-          this.currentUser = user
-          resolve(user)
-        }
-      })
-    })
   }
 
   async logout(): Promise<void> {
     await this.supabase.auth.signOut()
     this.currentUser = null
+    this.notifyAuthListeners(null)
   }
 
   getUser(): CloudUser | null {

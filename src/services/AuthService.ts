@@ -6,17 +6,15 @@ export class AuthService {
 
   constructor(provider: CloudProvider) {
     this.provider = provider
+    this.provider.onAuthChange((user) => this.notify(user))
   }
 
-  async login(): Promise<CloudUser> {
-    const user = await this.provider.login()
-    this.notify(user)
-    return user
+  async login(): Promise<void> {
+    await this.provider.login()
   }
 
   async logout(): Promise<void> {
     await this.provider.logout()
-    this.notify(null)
   }
 
   getUser(): CloudUser | null {
@@ -25,6 +23,7 @@ export class AuthService {
 
   onAuthChange(callback: (user: CloudUser | null) => void): () => void {
     this.listeners.push(callback)
+    callback(this.getUser())
     return () => {
       this.listeners = this.listeners.filter((l) => l !== callback)
     }
