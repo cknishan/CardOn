@@ -9,7 +9,7 @@
 
 import { Link, useNavigate } from 'react-router-dom'
 import type { ReactNode } from 'react'
-import { useAuth } from './AuthContext'
+import { useAuth } from './authContext'
 import UserAvatar from './UserAvatar'
 
 interface LayoutProps {

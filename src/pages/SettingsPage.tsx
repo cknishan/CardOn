@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { db } from '../database/dexie'
-import { useAuth } from '../components/AuthContext'
+import { useAuth } from '../components/authContext'
 import { SyncService } from '../services/SyncService'
 import { supabaseProvider } from '../providers/SupabaseProvider'
 

@@ -1,15 +1,7 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import { AuthService } from '../services/AuthService'
 import type { CloudProvider, CloudUser } from '../providers/CloudProvider'
-
-interface AuthContextValue {
-  user: CloudUser | null
-  isLoggedIn: boolean
-  login: () => Promise<void>
-  logout: () => Promise<void>
-}
-
-const AuthContext = createContext<AuthContextValue | null>(null)
+import { AuthContext } from './authContext'
 
 interface AuthProviderProps {
   children?: ReactNode
@@ -39,13 +31,4 @@ function AuthProvider({ children, provider }: AuthProviderProps) {
   )
 }
 
-function useAuth(): AuthContextValue {
-  const ctx = useContext(AuthContext)
-  if (!ctx) {
-    throw new Error('useAuth must be used within an AuthProvider')
-  }
-  return ctx
-}
-
-export { AuthProvider, useAuth }
-export type { AuthContextValue }
+export { AuthProvider }
