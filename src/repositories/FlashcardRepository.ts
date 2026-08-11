@@ -58,6 +58,10 @@ export const FlashcardRepository = {
     await db.cards.update(id, { ...changes, updatedAt: new Date().toISOString() })
   },
 
+  async upsert(record: Flashcard): Promise<void> {
+    await db.cards.put(record)
+  },
+
   async delete(id: string): Promise<void> {
     await db.cards.update(id, {
       deletedAt: new Date().toISOString(),

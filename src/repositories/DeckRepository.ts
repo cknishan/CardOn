@@ -25,6 +25,10 @@ export const DeckRepository = {
     await db.decks.update(id, { ...changes, updatedAt: new Date().toISOString() })
   },
 
+  async upsert(record: Deck): Promise<void> {
+    await db.decks.put(record)
+  },
+
   async delete(id: string): Promise<void> {
     await db.decks.update(id, {
       deletedAt: new Date().toISOString(),

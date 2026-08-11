@@ -32,7 +32,11 @@ export class SyncService {
   private async mergeDecks(remote: Deck[]) {
     for (const remoteDeck of remote) {
       const local = await DeckRepository.getById(remoteDeck.id)
-      if (!local || remoteDeck.updatedAt > local.updatedAt) {
+      if (!local) {
+        if (!remoteDeck.deletedAt) {
+          await DeckRepository.upsert(remoteDeck)
+        }
+      } else if (remoteDeck.updatedAt > local.updatedAt) {
         if (remoteDeck.deletedAt) {
           await DeckRepository.hardDelete(remoteDeck.id)
         } else {
@@ -48,7 +52,11 @@ export class SyncService {
   private async mergeFlashcards(remote: Flashcard[]) {
     for (const remoteCard of remote) {
       const local = await FlashcardRepository.getById(remoteCard.id)
-      if (!local || remoteCard.updatedAt > local.updatedAt) {
+      if (!local) {
+        if (!remoteCard.deletedAt) {
+          await FlashcardRepository.upsert(remoteCard)
+        }
+      } else if (remoteCard.updatedAt > local.updatedAt) {
         if (remoteCard.deletedAt) {
           await FlashcardRepository.hardDelete(remoteCard.id)
         } else {
