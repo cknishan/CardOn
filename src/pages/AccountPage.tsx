@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../components/AuthContext'
+import { useAuth } from '../components/authContext'
 import UserAvatar from '../components/UserAvatar'
 
 function AccountPage() {
