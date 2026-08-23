@@ -19,7 +19,7 @@
 
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
-import { AuthProvider } from './components/AuthContext'
+import { AuthProvider } from './components/AuthContext.tsx'
 import { supabaseProvider } from './providers/SupabaseProvider'
 import DashboardPage from './pages/DashboardPage'
 import DeckFormPage from './pages/DeckFormPage'
