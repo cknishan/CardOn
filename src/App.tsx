@@ -5,6 +5,7 @@
  *
  * Route structure:
  * - `/` — Dashboard (deck list)
+ * - `/account` — Account & sign-in state
  * - `/settings` — Settings & data management
  * - `/decks/new` — Create a new deck
  * - `/decks/:deckId` — Deck detail (card list)
@@ -18,6 +19,8 @@
 
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
+import { AuthProvider } from './components/AuthContext'
+import { supabaseProvider } from './providers/SupabaseProvider'
 import DashboardPage from './pages/DashboardPage'
 import DeckFormPage from './pages/DeckFormPage'
 import DeckDetailPage from './pages/DeckDetailPage'
@@ -25,24 +28,28 @@ import CardFormPage from './pages/CardFormPage'
 import ImportPage from './pages/ImportPage'
 import StudySessionPage from './pages/StudySessionPage'
 import SettingsPage from './pages/SettingsPage'
+import AccountPage from './pages/AccountPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 function App() {
   return (
-    <Layout>
-      <Routes>
-        <Route path="/" element={<DashboardPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/decks/new" element={<DeckFormPage />} />
-        <Route path="/decks/:deckId" element={<DeckDetailPage />} />
-        <Route path="/decks/:deckId/edit" element={<DeckFormPage />} />
-        <Route path="/decks/:deckId/study" element={<StudySessionPage />} />
-        <Route path="/decks/:deckId/import" element={<ImportPage />} />
-        <Route path="/decks/:deckId/cards/new" element={<CardFormPage />} />
-        <Route path="/decks/:deckId/cards/:cardId/edit" element={<CardFormPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </Layout>
+    <AuthProvider provider={supabaseProvider}>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/account" element={<AccountPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/decks/new" element={<DeckFormPage />} />
+          <Route path="/decks/:deckId" element={<DeckDetailPage />} />
+          <Route path="/decks/:deckId/edit" element={<DeckFormPage />} />
+          <Route path="/decks/:deckId/study" element={<StudySessionPage />} />
+          <Route path="/decks/:deckId/import" element={<ImportPage />} />
+          <Route path="/decks/:deckId/cards/new" element={<CardFormPage />} />
+          <Route path="/decks/:deckId/cards/:cardId/edit" element={<CardFormPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Layout>
+    </AuthProvider>
   )
 }
 

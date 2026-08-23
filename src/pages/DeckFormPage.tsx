@@ -1,31 +1,28 @@
-/**
- * DeckFormPage
- *
- * Route: `/decks/new` | `/decks/:deckId/edit`
- * Description: Form to create a new deck or edit an existing one.
- * Validates that the name is non-empty and ≤ 100 characters.
- * In edit mode, a "Delete this deck" option is shown.
- */
-
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getDeckById, mockDecks } from '../utils/mockData'
+import { DeckRepository } from '../repositories/DeckRepository'
+import type { Deck } from '../models'
 
 function DeckFormPage() {
   const { deckId } = useParams()
   const navigate = useNavigate()
-  const existing = deckId ? getDeckById(deckId) : null
-
-  const [name, setName] = useState(existing?.name ?? '')
+  const [deck, setDeck] = useState<Deck | null>()
+  const [name, setName] = useState('')
   const [error, setError] = useState('')
 
-  const isEdit = !!existing
+  const isEdit = !!deckId
 
-  /**
-   * Validates the deck name and saves (creates or updates) the deck.
-   * Redirects to dashboard on success.
-   */
-  function handleSubmit(e: React.FormEvent) {
+  useEffect(() => {
+    if (!deckId) return
+    async function load() {
+      const d = await DeckRepository.getById(deckId!)
+      setDeck(d)
+      if (d) setName(d.name)
+    }
+    load()
+  }, [deckId])
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const trimmed = name.trim()
     if (!trimmed) {
@@ -37,17 +34,33 @@ function DeckFormPage() {
       return
     }
     if (isEdit) {
-      const deck = mockDecks.find(d => d.id === deckId)
-      if (deck) deck.name = trimmed
+      await DeckRepository.update(deckId!, { name: trimmed })
+    } else {
+      await DeckRepository.create({ name: trimmed })
     }
     navigate('/')
   }
 
-  /** Deletes the current deck after confirmation. */
-  function handleDelete() {
+  async function handleDelete() {
     if (window.confirm('Delete this deck and all its cards?')) {
+      await DeckRepository.hardDelete(deckId!)
       navigate('/')
     }
+  }
+
+  if (isEdit && deck === undefined) {
+    return (
+      <div className="flex flex-col items-center justify-center py-32 text-center">
+        <div className="text-5xl mb-4">🔍</div>
+        <h2 className="text-lg font-semibold text-dark mb-2">Deck not found</h2>
+        <button
+          onClick={() => navigate('/')}
+          className="text-primary text-sm font-medium hover:underline"
+        >
+          Back to Dashboard
+        </button>
+      </div>
+    )
   }
 
   return (
@@ -57,7 +70,10 @@ function DeckFormPage() {
           {isEdit ? 'Edit Deck' : 'Create New Deck'}
         </h1>
 
-        <form onSubmit={handleSubmit} className="bg-surface rounded-xl border border-border p-6 space-y-5">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-surface rounded-xl border border-border p-6 space-y-5"
+        >
           <div>
             <label htmlFor="deckName" className="block text-sm font-medium text-dark mb-1.5">
               Deck Name
@@ -66,7 +82,10 @@ function DeckFormPage() {
               id="deckName"
               type="text"
               value={name}
-              onChange={e => { setName(e.target.value); setError('') }}
+              onChange={(e) => {
+                setName(e.target.value)
+                setError('')
+              }}
               placeholder="e.g. French Basics"
               maxLength={100}
               autoFocus

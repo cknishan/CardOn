@@ -7,8 +7,10 @@
  * Route: rendered as a wrapper in App.tsx — no route of its own.
  */
 
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import type { ReactNode } from 'react'
+import { useAuth } from './authContext'
+import UserAvatar from './UserAvatar'
 
 interface LayoutProps {
   /** Page content rendered inside the main area */
@@ -20,22 +22,41 @@ interface LayoutProps {
  * Uses Tailwind's `max-w-7xl` container centred with padding.
  */
 function Layout({ children }: LayoutProps) {
+  const navigate = useNavigate()
+  const { user } = useAuth()
+
   return (
     <div className="min-h-screen">
       <nav className="flex items-center justify-between border-b bg-white px-6 py-3">
-        <Link to="/">
-          Card-On
-        </Link>
-        <Link to="/settings" aria-label="Settings">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-        </Link>
+        <Link to="/">Card-On</Link>
+        <div className="flex items-center gap-4">
+          <button onClick={() => navigate('/account')} aria-label="Account">
+            <UserAvatar user={user} size="sm" />
+          </button>
+          <Link to="/settings" aria-label="Settings">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+          </Link>
+        </div>
       </nav>
-      <main className="mx-auto max-w-7xl px-4 py-6">
-        {children}
-      </main>
+      <main className="mx-auto max-w-7xl px-4 py-6">{children}</main>
     </div>
   )
 }
