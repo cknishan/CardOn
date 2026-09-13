@@ -27,16 +27,23 @@ function Layout({ children }: LayoutProps) {
 
   return (
     <div className="min-h-screen">
-      <nav className="flex items-center justify-between border-b bg-white px-6 py-3">
-        <Link to="/">Card-On</Link>
-        <div className="flex items-center gap-4">
+      <nav className="flex items-center justify-between border-b bg-white px-6 py-4 sm:px-8">
+        <Link
+          to="/"
+          className="flex items-center gap-3 text-xl font-bold text-dark"
+          aria-label="CardOn home"
+        >
+          <img src="/logo.png" alt="" className="h-11 w-11 object-contain" />
+          <span>CardOn</span>
+        </Link>
+        <div className="flex items-center gap-5">
           <button onClick={() => navigate('/account')} aria-label="Account">
-            <UserAvatar user={user} size="sm" />
+            <UserAvatar user={user} size="md" />
           </button>
           <Link to="/settings" aria-label="Settings">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
+              className="h-7 w-7"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

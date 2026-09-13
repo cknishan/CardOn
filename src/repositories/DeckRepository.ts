@@ -10,18 +10,22 @@ export const DeckRepository = {
     return db.decks.get(id)
   },
 
-  async create(data: { name: string }): Promise<string> {
+  async create(data: { name: string; description: string | null }): Promise<string> {
     const now = new Date().toISOString()
     return db.decks.add({
       id: crypto.randomUUID(),
       name: data.name,
+      description: data.description,
       createdAt: now,
       updatedAt: now,
       deletedAt: null,
     })
   },
 
-  async update(id: string, changes: Partial<Pick<Deck, 'name' | 'deletedAt'>>): Promise<void> {
+  async update(
+    id: string,
+    changes: Partial<Pick<Deck, 'name' | 'description' | 'deletedAt'>>
+  ): Promise<void> {
     await db.decks.update(id, { ...changes, updatedAt: new Date().toISOString() })
   },
 

@@ -5,11 +5,11 @@ import { FlashcardRepository } from '../repositories/FlashcardRepository'
 import DeckCard from '../components/DeckCard'
 import EmptyState from '../components/EmptyState'
 import type { Deck } from '../models'
+import type { DeckStats } from '../repositories/FlashcardRepository'
 
 interface DeckRow {
   deck: Deck
-  totalCards: number
-  dueToday: number
+  stats: DeckStats
 }
 
 function DashboardPage() {
@@ -22,8 +22,7 @@ function DashboardPage() {
       const data = await Promise.all(
         decks.map(async (deck) => ({
           deck,
-          totalCards: await FlashcardRepository.getTotalCount(deck.id),
-          dueToday: await FlashcardRepository.getDueCount(deck.id),
+          stats: await FlashcardRepository.getDeckStats(deck.id),
         }))
       )
       setRows(data)
@@ -33,7 +32,7 @@ function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background px-4 py-8">
-      <div className="max-w-content mx-auto">
+      <div className="max-w-[1010px] mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl font-bold text-dark">Your Decks</h1>
@@ -66,9 +65,9 @@ function DashboardPage() {
         )}
 
         {rows.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {rows.map(({ deck, totalCards, dueToday }) => (
-              <DeckCard key={deck.id} deck={deck} totalCards={totalCards} dueToday={dueToday} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 justify-items-center">
+            {rows.map(({ deck, stats }) => (
+              <DeckCard key={deck.id} deck={deck} stats={stats} />
             ))}
           </div>
         )}

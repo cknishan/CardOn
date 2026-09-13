@@ -8,6 +8,7 @@ function DeckFormPage() {
   const navigate = useNavigate()
   const [deck, setDeck] = useState<Deck | null>()
   const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
   const [error, setError] = useState('')
 
   const isEdit = !!deckId
@@ -17,7 +18,10 @@ function DeckFormPage() {
     async function load() {
       const d = await DeckRepository.getById(deckId!)
       setDeck(d)
-      if (d) setName(d.name)
+      if (d) {
+        setName(d.name)
+        setDescription(d.description ?? '')
+      }
     }
     load()
   }, [deckId])
@@ -34,9 +38,12 @@ function DeckFormPage() {
       return
     }
     if (isEdit) {
-      await DeckRepository.update(deckId!, { name: trimmed })
+      await DeckRepository.update(deckId!, {
+        name: trimmed,
+        description: description.trim() || null,
+      })
     } else {
-      await DeckRepository.create({ name: trimmed })
+      await DeckRepository.create({ name: trimmed, description: description.trim() || null })
     }
     navigate('/')
   }
@@ -93,6 +100,20 @@ function DeckFormPage() {
             />
             {error && <p className="text-danger text-xs mt-1.5">{error}</p>}
             <p className="text-muted text-xs mt-1.5 text-right">{name.length}/100</p>
+          </div>
+
+          <div>
+            <label htmlFor="deckDescription" className="block text-sm font-medium text-dark mb-1.5">
+              Description <span className="text-muted font-normal">(optional)</span>
+            </label>
+            <textarea
+              id="deckDescription"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="What will you study in this deck?"
+              rows={4}
+              className="w-full border border-border rounded-lg px-4 py-2.5 text-sm text-dark placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+            />
           </div>
 
           <div className="flex gap-3 pt-2">
