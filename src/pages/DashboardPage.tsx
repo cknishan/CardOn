@@ -2,37 +2,64 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CreateDeckCard from '../components/CreateDeckCard'
 import DeckCard from '../components/DeckCard'
+import SampleDecksCard from '../components/SampleDecksCard'
 import type { Deck } from '../models'
 import { DeckRepository } from '../repositories/DeckRepository'
 import { FlashcardRepository } from '../repositories/FlashcardRepository'
 import type { DeckStats } from '../repositories/FlashcardRepository'
+import { seedSampleDecks } from '../services/SampleDeckService'
 
 interface DeckRow {
   deck: Deck
   stats: DeckStats
 }
 
+async function getDeckRows(): Promise<DeckRow[]> {
+  const decks = await DeckRepository.getAll()
+  return Promise.all(
+    decks.map(async (deck) => ({
+      deck,
+      stats: await FlashcardRepository.getDeckStats(deck.id),
+    }))
+  )
+}
+
 function DashboardPage() {
   const navigate = useNavigate()
   const [rows, setRows] = useState<DeckRow[]>([])
+  const [hasLoaded, setHasLoaded] = useState(false)
+  const [isSeeding, setIsSeeding] = useState(false)
+  const [seedError, setSeedError] = useState('')
 
   useEffect(() => {
     async function load() {
-      const decks = await DeckRepository.getAll()
-      const data = await Promise.all(
-        decks.map(async (deck) => ({
-          deck,
-          stats: await FlashcardRepository.getDeckStats(deck.id),
-        }))
-      )
-      setRows(data)
+      setRows(await getDeckRows())
+      setHasLoaded(true)
     }
-    load()
+
+    void load()
   }, [])
+
+  async function handleSeedSampleDecks() {
+    if (isSeeding) return
+
+    setIsSeeding(true)
+    setSeedError('')
+
+    try {
+      await seedSampleDecks()
+      setRows(await getDeckRows())
+      setHasLoaded(true)
+    } catch {
+      setSeedError('Sample decks could not be added. Please try again.')
+    } finally {
+      setIsSeeding(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background px-4 py-8">
-      <div className="mx-auto max-w-[1010px]">
+      <div className="mx-auto max-w-252.5">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-dark">Your Decks</h1>
@@ -58,10 +85,17 @@ function DashboardPage() {
           </button>
         </div>
 
-        {rows.length === 0 && (
+        {hasLoaded && rows.length === 0 && (
           <div className="mb-8 py-6 text-center">
             <h2 className="mb-2 text-lg font-semibold text-dark">No decks yet</h2>
-            <p className="text-sm text-muted">Create your first deck to start studying.</p>
+            <p className="text-sm text-muted">
+              Create your own deck or add sample decks to explore CardOn.
+            </p>
+            {seedError && (
+              <p className="mt-3 text-sm font-medium text-danger" role="alert">
+                {seedError}
+              </p>
+            )}
           </div>
         )}
 
@@ -70,6 +104,9 @@ function DashboardPage() {
             <DeckCard key={deck.id} deck={deck} stats={stats} />
           ))}
           <CreateDeckCard />
+          {hasLoaded && rows.length === 0 && (
+            <SampleDecksCard isLoading={isSeeding} onClick={handleSeedSampleDecks} />
+          )}
         </div>
       </div>
     </div>

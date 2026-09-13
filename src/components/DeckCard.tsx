@@ -12,18 +12,18 @@ function DeckCard({ deck, stats }: DeckCardProps) {
   const navigate = useNavigate()
 
   return (
-    <article className="surface-card flex aspect-square w-full max-w-[330px] flex-col p-5 shadow-sm">
+    <article className="surface-card flex aspect-square w-full max-w-82.5 flex-col p-5 shadow-sm">
       <div className="flex items-start justify-between gap-4">
         <h2
           {...getTextAttributes(deck.name)}
-          className="multilingual-display line-clamp-3 min-w-0 flex-1 break-words text-[22px] font-bold leading-[1.4] text-[#cf3333]"
+          className="multilingual-display line-clamp-3 min-w-0 flex-1 wrap-break-words text-[22px] font-bold leading-[1.4] text-[#cf3333]"
         >
           {deck.name}
         </h2>
 
         <button
           type="button"
-          className="group relative w-20 shrink-0 rounded-[20px] bg-[#fff4f4] px-3 py-3 text-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          className="group relative w-20 shrink-0 rounded-xl bg-[#fff4f4] px-3 py-3 text-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           aria-label={`${stats.seen} of ${stats.total} cards seen, ${stats.dueAgain} due again, ${stats.completed} completed and not due`}
           aria-describedby={`deck-progress-${deck.id}`}
         >
