@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import type { Deck } from '../models'
 import type { DeckStats } from '../repositories/FlashcardRepository'
+import { getTextAttributes } from '../utils/textLanguage'
 
 interface DeckCardProps {
   deck: Deck
@@ -13,7 +14,10 @@ function DeckCard({ deck, stats }: DeckCardProps) {
   return (
     <article className="flex aspect-square w-full max-w-[330px] flex-col rounded-[20px] border border-border bg-surface p-5 shadow-sm">
       <div className="flex items-start justify-between gap-4">
-        <h2 className="line-clamp-3 min-w-0 flex-1 break-words text-[22px] font-bold leading-[1.4] text-[#cf3333]">
+        <h2
+          {...getTextAttributes(deck.name)}
+          className="multilingual-display line-clamp-3 min-w-0 flex-1 break-words text-[22px] font-bold leading-[1.4] text-[#cf3333]"
+        >
           {deck.name}
         </h2>
 
@@ -41,7 +45,12 @@ function DeckCard({ deck, stats }: DeckCardProps) {
         </button>
       </div>
 
-      <p className="mt-6 line-clamp-4 text-sm leading-[1.35] text-dark">{deck.description ?? ''}</p>
+      <p
+        {...getTextAttributes(deck.description ?? '')}
+        className="multilingual-text mt-6 line-clamp-4 text-sm leading-[1.35] text-dark"
+      >
+        {deck.description ?? ''}
+      </p>
 
       <div className="mt-auto grid grid-cols-3 items-center">
         <button

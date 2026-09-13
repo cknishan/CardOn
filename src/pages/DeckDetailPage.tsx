@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { DeckRepository } from '../repositories/DeckRepository'
 import { FlashcardRepository } from '../repositories/FlashcardRepository'
 import type { Deck, Flashcard } from '../models'
+import { getTextAttributes } from '../utils/textLanguage'
 
 function DeckDetailPage() {
   const { deckId } = useParams<{ deckId: string }>()
@@ -78,7 +79,12 @@ function DeckDetailPage() {
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-dark">{deck.name}</h1>
+            <h1
+              {...getTextAttributes(deck.name)}
+              className="multilingual-display text-2xl font-bold text-dark"
+            >
+              {deck.name}
+            </h1>
             <p className="text-sm text-muted mt-1">
               {cards.length} card{cards.length !== 1 ? 's' : ''}
               {dueCount > 0 && (
@@ -155,10 +161,18 @@ function DeckDetailPage() {
                       key={card.id}
                       className="border-b border-border last:border-0 hover:bg-background/50 transition"
                     >
-                      <td className="px-5 py-4 max-w-50 truncate font-medium text-dark">
+                      <td
+                        {...getTextAttributes(card.question)}
+                        className="multilingual-text px-5 py-4 max-w-50 truncate font-medium text-dark"
+                      >
                         {card.question}
                       </td>
-                      <td className="px-5 py-4 max-w-50 truncate text-muted">{card.answer}</td>
+                      <td
+                        {...getTextAttributes(card.answer)}
+                        className="multilingual-text px-5 py-4 max-w-50 truncate text-muted"
+                      >
+                        {card.answer}
+                      </td>
                       <td className="px-5 py-4">
                         <span
                           className={`text-xs font-semibold px-2.5 py-1 rounded-full ${

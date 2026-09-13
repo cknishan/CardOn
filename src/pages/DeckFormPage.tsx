@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { DeckRepository } from '../repositories/DeckRepository'
 import type { Deck } from '../models'
+import { getTextAttributes } from '../utils/textLanguage'
 
 function DeckFormPage() {
   const { deckId } = useParams()
@@ -86,6 +87,7 @@ function DeckFormPage() {
               Deck Name
             </label>
             <input
+              {...getTextAttributes(name)}
               id="deckName"
               type="text"
               value={name}
@@ -96,7 +98,7 @@ function DeckFormPage() {
               placeholder="e.g. French Basics"
               maxLength={100}
               autoFocus
-              className="w-full border border-border rounded-lg px-4 py-2.5 text-sm text-dark placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+              className="multilingual-text w-full border border-border rounded-lg px-4 py-2.5 text-sm text-dark placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
             />
             {error && <p className="text-danger text-xs mt-1.5">{error}</p>}
             <p className="text-muted text-xs mt-1.5 text-right">{name.length}/100</p>
@@ -107,12 +109,13 @@ function DeckFormPage() {
               Description <span className="text-muted font-normal">(optional)</span>
             </label>
             <textarea
+              {...getTextAttributes(description)}
               id="deckDescription"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What will you study in this deck?"
               rows={4}
-              className="w-full border border-border rounded-lg px-4 py-2.5 text-sm text-dark placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+              className="multilingual-text w-full border border-border rounded-lg px-4 py-2.5 text-sm text-dark placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
             />
           </div>
 

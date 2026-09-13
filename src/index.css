@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap');
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Sans+Sinhala:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
 
 @theme {
   --color-background: #f1f4f3;
@@ -22,7 +22,12 @@
   --color-easy-bg: #e8f0ff;
   --color-easy-text: #1a5fd4;
 
-  --font-sans: 'Noto Sans', sans-serif;
+  --font-sans:
+    'Noto Sans', 'Noto Sans Sinhala', 'Noto Sans Devanagari', 'Noto Sans Arabic', 'Noto Sans JP',
+    'Noto Sans KR', 'Noto Sans SC', sans-serif;
+  --font-display:
+    'Fredoka', 'Noto Sans', 'Noto Sans Sinhala', 'Noto Sans Devanagari', 'Noto Sans Arabic',
+    'Noto Sans JP', 'Noto Sans KR', 'Noto Sans SC', sans-serif;
 
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -38,4 +43,50 @@ body {
   color: var(--color-dark);
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+button,
+.font-display {
+  font-family: var(--font-display);
+}
+
+.multilingual-text {
+  font-family: var(--font-sans);
+}
+
+.multilingual-display {
+  font-family: var(--font-display);
+}
+
+.multilingual-text:lang(si),
+.multilingual-display:lang(si) {
+  font-family: 'Noto Sans Sinhala', var(--font-sans);
+}
+
+.multilingual-text:lang(und-Deva),
+.multilingual-display:lang(und-Deva) {
+  font-family: 'Noto Sans Devanagari', var(--font-sans);
+}
+
+.multilingual-text:lang(und-Arab),
+.multilingual-display:lang(und-Arab) {
+  font-family: 'Noto Sans Arabic', var(--font-sans);
+}
+
+.multilingual-text:lang(zh-Hans),
+.multilingual-display:lang(zh-Hans) {
+  font-family: 'Noto Sans SC', var(--font-sans);
+}
+
+.multilingual-text:lang(ja),
+.multilingual-display:lang(ja) {
+  font-family: 'Noto Sans JP', var(--font-sans);
+}
+
+.multilingual-text:lang(ko),
+.multilingual-display:lang(ko) {
+  font-family: 'Noto Sans KR', var(--font-sans);
 }

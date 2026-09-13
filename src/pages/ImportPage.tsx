@@ -5,6 +5,7 @@ import { FlashcardRepository } from '../repositories/FlashcardRepository'
 import { parseMarkdown } from '../utils/markdownParser'
 import type { ParsedCard } from '../utils/markdownParser'
 import type { Deck } from '../models'
+import { getTextAttributes } from '../utils/textLanguage'
 
 function ImportPage() {
   const { deckId } = useParams<{ deckId: string }>()
@@ -231,14 +232,24 @@ function ImportPage() {
                   className={`text-xs p-3 rounded-lg ${card.errors.length > 0 ? 'bg-again-bg' : 'bg-good-bg'}`}
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <span className="font-medium">Q: {card.question}</span>
+                    <span
+                      {...getTextAttributes(card.question)}
+                      className="multilingual-text font-medium"
+                    >
+                      Q: {card.question}
+                    </span>
                     {card.errors.length > 0 && (
                       <span className="text-again-text shrink-0 ml-2">
                         {card.errors.join('; ')}
                       </span>
                     )}
                   </div>
-                  <span className="text-muted">A: {card.answer}</span>
+                  <span
+                    {...getTextAttributes(card.answer)}
+                    className="multilingual-text text-muted"
+                  >
+                    A: {card.answer}
+                  </span>
                 </div>
               ))}
             </div>
@@ -273,7 +284,11 @@ function ImportPage() {
                 </p>
                 <div className="space-y-1.5 max-h-32 overflow-y-auto">
                   {errorCards.map((card, i) => (
-                    <p key={i} className="text-xs text-muted">
+                    <p
+                      key={i}
+                      {...getTextAttributes(card.question)}
+                      className="multilingual-text text-xs text-muted"
+                    >
                       Q: {card.question} — {card.errors.join('; ')}
                     </p>
                   ))}

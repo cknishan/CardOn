@@ -5,6 +5,7 @@ import { FlashcardRepository } from '../repositories/FlashcardRepository'
 import { applySM2, RATINGS } from '../utils/sm2'
 import type { Rating, RatingConfig } from '../utils/sm2'
 import type { Flashcard, Deck } from '../models'
+import { getTextAttributes } from '../utils/textLanguage'
 
 function StudySessionPage() {
   const { deckId } = useParams<{ deckId: string }>()
@@ -95,7 +96,12 @@ function StudySessionPage() {
       <div className="min-h-screen bg-background px-4 py-8 flex items-center justify-center">
         <div className="max-w-md w-full text-center bg-surface rounded-xl border border-border p-10">
           <div className="text-6xl mb-5">📖</div>
-          <h1 className="text-xl font-bold text-dark mb-2">{deck.name}</h1>
+          <h1
+            {...getTextAttributes(deck.name)}
+            className="multilingual-display text-xl font-bold text-dark mb-2"
+          >
+            {deck.name}
+          </h1>
           {dueCards.length === 0 ? (
             <>
               <p className="text-muted text-sm mb-6">Nothing due today! Come back tomorrow.</p>
@@ -170,7 +176,10 @@ function StudySessionPage() {
         </div>
 
         <div className="bg-surface rounded-xl border border-border p-8 sm:p-10">
-          <div className="text-lg sm:text-xl font-semibold text-dark mb-2 leading-relaxed">
+          <div
+            {...getTextAttributes(card.question)}
+            className="multilingual-text text-lg sm:text-xl font-semibold text-dark mb-2 leading-relaxed"
+          >
             {card.question}
           </div>
 
@@ -200,13 +209,19 @@ function StudySessionPage() {
           </div>
 
           {showHint && card.hint && (
-            <div className="text-sm text-warning bg-warning/10 rounded-lg px-4 py-3 mb-4">
+            <div
+              {...getTextAttributes(card.hint)}
+              className="multilingual-text text-sm text-warning bg-warning/10 rounded-lg px-4 py-3 mb-4"
+            >
               💡 {card.hint}
             </div>
           )}
 
           {showNote && card.note && (
-            <div className="text-sm text-accent bg-accent/10 rounded-lg px-4 py-3 mb-4">
+            <div
+              {...getTextAttributes(card.note)}
+              className="multilingual-text text-sm text-accent bg-accent/10 rounded-lg px-4 py-3 mb-4"
+            >
               📝 {card.note}
             </div>
           )}
@@ -221,7 +236,10 @@ function StudySessionPage() {
           ) : (
             <>
               <div className="mt-6 pt-6 border-t border-border">
-                <div className="text-base sm:text-lg text-dark leading-relaxed">
+                <div
+                  {...getTextAttributes(card.answer)}
+                  className="multilingual-text text-base sm:text-lg text-dark leading-relaxed"
+                >
                   <span className="font-medium">Answer: </span>
                   {card.answer}
                 </div>

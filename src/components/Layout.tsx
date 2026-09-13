@@ -30,7 +30,7 @@ function Layout({ children }: LayoutProps) {
       <nav className="flex items-center justify-between border-b bg-white px-6 py-4 sm:px-8">
         <Link
           to="/"
-          className="flex items-center gap-3 text-xl font-bold text-dark"
+          className="font-display flex items-center gap-3 text-xl font-bold text-dark"
           aria-label="CardOn home"
         >
           <img src="/logo.png" alt="" className="h-11 w-11 object-contain" />
