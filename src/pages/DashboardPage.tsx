@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import CreateDeckCard from '../components/CreateDeckCard'
+import DeckCard from '../components/DeckCard'
+import type { Deck } from '../models'
 import { DeckRepository } from '../repositories/DeckRepository'
 import { FlashcardRepository } from '../repositories/FlashcardRepository'
-import DeckCard from '../components/DeckCard'
-import EmptyState from '../components/EmptyState'
-import type { Deck } from '../models'
 import type { DeckStats } from '../repositories/FlashcardRepository'
 
 interface DeckRow {
@@ -32,45 +32,45 @@ function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background px-4 py-8">
-      <div className="max-w-[1010px] mx-auto">
-        <div className="flex items-center justify-between mb-8">
+      <div className="mx-auto max-w-[1010px]">
+        <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-dark">Your Decks</h1>
-            <p className="text-sm text-muted mt-1">
+            <p className="mt-1 text-sm text-muted">
               {rows.length} deck{rows.length !== 1 ? 's' : ''}
             </p>
           </div>
           <button
+            type="button"
             onClick={() => navigate('/decks/new')}
-            className="flex items-center gap-2 bg-dark text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition"
+            className="icon-button border-2 border-dark text-dark hover:bg-surface"
+            aria-label="Create a new deck"
+            title="Create a new deck"
           >
-            + Create New Deck
+            <svg className="h-7 w-7" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+              <path
+                d="M14 4v20M4 14h20"
+                stroke="currentColor"
+                strokeWidth="3.5"
+                strokeLinecap="round"
+              />
+            </svg>
           </button>
         </div>
 
         {rows.length === 0 && (
-          <EmptyState
-            icon="📚"
-            title="No decks yet"
-            description="Create your first deck to start studying."
-            action={
-              <button
-                onClick={() => navigate('/decks/new')}
-                className="bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition"
-              >
-                + Create New Deck
-              </button>
-            }
-          />
-        )}
-
-        {rows.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 justify-items-center">
-            {rows.map(({ deck, stats }) => (
-              <DeckCard key={deck.id} deck={deck} stats={stats} />
-            ))}
+          <div className="mb-8 py-6 text-center">
+            <h2 className="mb-2 text-lg font-semibold text-dark">No decks yet</h2>
+            <p className="text-sm text-muted">Create your first deck to start studying.</p>
           </div>
         )}
+
+        <div className="grid grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {rows.map(({ deck, stats }) => (
+            <DeckCard key={deck.id} deck={deck} stats={stats} />
+          ))}
+          <CreateDeckCard />
+        </div>
       </div>
     </div>
   )

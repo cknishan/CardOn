@@ -96,25 +96,25 @@ function DeckDetailPage() {
             <button
               onClick={() => navigate(`/decks/${deckId}/study`)}
               disabled={dueCount === 0}
-              className="bg-dark text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition disabled:opacity-40"
+              className="button-base button-primary"
             >
               ▶ Study
             </button>
             <button
               onClick={() => navigate(`/decks/${deckId}/cards/new`)}
-              className="bg-primary text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition"
+              className="button-base button-highlight"
             >
               + Add Card
             </button>
             <button
               onClick={() => navigate(`/decks/${deckId}/import`)}
-              className="border border-border text-dark px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-background transition"
+              className="button-base button-secondary"
             >
               Import Markdown
             </button>
             <button
               onClick={() => navigate(`/decks/${deckId}/edit`)}
-              className="border border-border text-dark px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-background transition"
+              className="button-base button-secondary"
             >
               Edit Deck
             </button>
@@ -122,20 +122,19 @@ function DeckDetailPage() {
         </div>
 
         {cards.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-24 text-center bg-surface rounded-xl border border-border">
-            <div className="text-5xl mb-4">🃏</div>
+          <div className="surface-card flex flex-col items-center justify-center px-6 py-16 text-center sm:py-20">
             <h2 className="text-lg font-semibold text-dark mb-2">No cards yet</h2>
             <p className="text-sm text-muted mb-6">Add your first card or import from markdown.</p>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap justify-center gap-3">
               <button
                 onClick={() => navigate(`/decks/${deckId}/cards/new`)}
-                className="bg-primary text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition"
+                className="button-base button-highlight"
               >
                 + Add Card
               </button>
               <button
                 onClick={() => navigate(`/decks/${deckId}/import`)}
-                className="border border-border text-dark px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-background transition"
+                className="button-base button-secondary"
               >
                 Import Markdown
               </button>
@@ -144,7 +143,7 @@ function DeckDetailPage() {
         )}
 
         {cards.length > 0 && (
-          <div className="bg-surface rounded-xl border border-border overflow-hidden">
+          <div className="surface-card overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -175,7 +174,7 @@ function DeckDetailPage() {
                       </td>
                       <td className="px-5 py-4">
                         <span
-                          className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+                          className={`status-badge ${
                             card.dueDate <= new Date().toISOString().split('T')[0]
                               ? 'bg-again-bg text-again-text'
                               : 'bg-good-bg text-good-text'

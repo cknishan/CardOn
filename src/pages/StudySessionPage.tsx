@@ -94,11 +94,10 @@ function StudySessionPage() {
   if (!sessionStarted) {
     return (
       <div className="min-h-screen bg-background px-4 py-8 flex items-center justify-center">
-        <div className="max-w-md w-full text-center bg-surface rounded-xl border border-border p-10">
-          <div className="text-6xl mb-5">📖</div>
+        <div className="surface-card w-full max-w-md p-8 text-center shadow-sm sm:p-10">
           <h1
             {...getTextAttributes(deck.name)}
-            className="multilingual-display text-xl font-bold text-dark mb-2"
+            className="multilingual-display mb-3 text-xl font-bold text-dark"
           >
             {deck.name}
           </h1>
@@ -106,8 +105,9 @@ function StudySessionPage() {
             <>
               <p className="text-muted text-sm mb-6">Nothing due today! Come back tomorrow.</p>
               <button
+                type="button"
                 onClick={() => navigate(`/decks/${deckId}`)}
-                className="bg-dark text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition"
+                className="button-base button-primary"
               >
                 Back to Deck
               </button>
@@ -118,10 +118,11 @@ function StudySessionPage() {
                 {dueCards.length} card{dueCards.length !== 1 ? 's' : ''} due for review
               </p>
               <button
+                type="button"
                 onClick={startSession}
-                className="mt-6 bg-dark text-white px-8 py-3 rounded-xl text-base font-semibold hover:opacity-90 transition"
+                className="button-base button-primary mt-6 px-8 py-3 text-base"
               >
-                ▶ Start Studying
+                Start Studying
               </button>
             </>
           )}
@@ -133,7 +134,7 @@ function StudySessionPage() {
   if (sessionComplete) {
     return (
       <div className="min-h-screen bg-background px-4 py-8 flex items-center justify-center">
-        <div className="max-w-md w-full text-center bg-surface rounded-xl border border-border p-10">
+        <div className="surface-card w-full max-w-md p-10 text-center">
           <div className="text-6xl mb-5">🎉</div>
           <h1 className="text-xl font-bold text-dark mb-2">Session Complete!</h1>
           <p className="text-success font-semibold text-lg mb-6">
@@ -142,7 +143,7 @@ function StudySessionPage() {
           <div className="flex gap-3 justify-center">
             <button
               onClick={() => navigate(`/decks/${deckId}`)}
-              className="bg-dark text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition"
+              className="button-base button-primary"
             >
               Back to Decks
             </button>
@@ -175,7 +176,7 @@ function StudySessionPage() {
           />
         </div>
 
-        <div className="bg-surface rounded-xl border border-border p-8 sm:p-10">
+        <div className="surface-card p-8 sm:p-10">
           <div
             {...getTextAttributes(card.question)}
             className="multilingual-text text-lg sm:text-xl font-semibold text-dark mb-2 leading-relaxed"
@@ -187,7 +188,7 @@ function StudySessionPage() {
             {card.hint && (
               <button
                 onClick={toggleHint}
-                className={`text-xs font-medium px-3 py-1.5 rounded-lg transition ${
+                className={`button-compact ${
                   showHint
                     ? 'bg-warning/20 text-warning'
                     : 'bg-border/50 text-muted hover:text-dark'
@@ -199,7 +200,7 @@ function StudySessionPage() {
             {card.note && (
               <button
                 onClick={toggleNote}
-                className={`text-xs font-medium px-3 py-1.5 rounded-lg transition ${
+                className={`button-compact ${
                   showNote ? 'bg-accent/20 text-accent' : 'bg-border/50 text-muted hover:text-dark'
                 }`}
               >
@@ -211,7 +212,7 @@ function StudySessionPage() {
           {showHint && card.hint && (
             <div
               {...getTextAttributes(card.hint)}
-              className="multilingual-text text-sm text-warning bg-warning/10 rounded-lg px-4 py-3 mb-4"
+              className="multilingual-text mb-4 rounded-md bg-warning/10 px-4 py-3 text-sm text-warning"
             >
               💡 {card.hint}
             </div>
@@ -220,7 +221,7 @@ function StudySessionPage() {
           {showNote && card.note && (
             <div
               {...getTextAttributes(card.note)}
-              className="multilingual-text text-sm text-accent bg-accent/10 rounded-lg px-4 py-3 mb-4"
+              className="multilingual-text mb-4 rounded-md bg-accent/10 px-4 py-3 text-sm text-accent"
             >
               📝 {card.note}
             </div>
@@ -229,7 +230,7 @@ function StudySessionPage() {
           {!showAnswer ? (
             <button
               onClick={() => setShowAnswer(true)}
-              className="w-full mt-2 bg-primary text-white py-3 rounded-xl text-sm font-semibold hover:opacity-90 transition"
+              className="button-base button-highlight mt-2 w-full py-3"
             >
               Show Answer
             </button>
@@ -250,7 +251,7 @@ function StudySessionPage() {
                   <button
                     key={key}
                     onClick={() => handleRate(key)}
-                    className={`${config.bg} ${config.textColor} py-3 rounded-xl text-sm font-bold hover:opacity-80 transition`}
+                    className={`button-base w-full py-3 font-bold hover:opacity-80 ${config.bg} ${config.textColor}`}
                   >
                     {config.label}
                   </button>

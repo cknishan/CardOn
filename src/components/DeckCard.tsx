@@ -12,7 +12,7 @@ function DeckCard({ deck, stats }: DeckCardProps) {
   const navigate = useNavigate()
 
   return (
-    <article className="flex aspect-square w-full max-w-[330px] flex-col rounded-[20px] border border-border bg-surface p-5 shadow-sm">
+    <article className="surface-card flex aspect-square w-full max-w-[330px] flex-col p-5 shadow-sm">
       <div className="flex items-start justify-between gap-4">
         <h2
           {...getTextAttributes(deck.name)}
@@ -37,7 +37,7 @@ function DeckCard({ deck, stats }: DeckCardProps) {
           <span
             id={`deck-progress-${deck.id}`}
             role="tooltip"
-            className="invisible absolute right-0 top-[calc(100%+0.5rem)] z-10 w-52 rounded-lg bg-dark px-3 py-2 text-left text-xs font-normal leading-relaxed text-white opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
+            className="invisible absolute right-0 top-[calc(100%+0.5rem)] z-10 w-52 rounded-sm bg-dark px-3 py-2 text-left text-xs font-normal leading-relaxed text-white opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
           >
             {stats.seen} seen out of {stats.total} total. {stats.dueAgain} due again.{' '}
             {stats.completed} completed and not due.
@@ -56,7 +56,7 @@ function DeckCard({ deck, stats }: DeckCardProps) {
         <button
           type="button"
           onClick={() => navigate(`/decks/${deck.id}/edit`)}
-          className="flex h-12 w-12 items-center justify-center justify-self-start rounded-xl text-dark transition hover:bg-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          className="icon-button justify-self-start text-dark hover:bg-background"
           aria-label={`Edit ${deck.name}`}
         >
           <svg className="h-9 w-9" viewBox="0 0 48 48" fill="none" aria-hidden="true">
@@ -80,7 +80,7 @@ function DeckCard({ deck, stats }: DeckCardProps) {
         <button
           type="button"
           onClick={() => navigate(`/decks/${deck.id}`)}
-          className="flex h-12 w-12 items-center justify-center justify-self-center rounded-full text-dark transition hover:bg-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          className="icon-button justify-self-center text-dark hover:bg-background"
           aria-label={`View ${deck.name}`}
         >
           <svg className="h-9 w-9" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -99,7 +99,7 @@ function DeckCard({ deck, stats }: DeckCardProps) {
           type="button"
           onClick={() => navigate(`/decks/${deck.id}/study`)}
           disabled={stats.studyDue === 0}
-          className="flex h-12 w-12 items-center justify-center justify-self-end rounded-full border-2 border-dark text-dark transition hover:bg-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-30"
+          className="icon-button justify-self-end border-2 border-dark text-dark hover:bg-background"
           aria-label={`Study ${deck.name}`}
         >
           <svg

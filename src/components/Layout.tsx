@@ -37,10 +37,19 @@ function Layout({ children }: LayoutProps) {
           <span>CardOn</span>
         </Link>
         <div className="flex items-center gap-5">
-          <button onClick={() => navigate('/account')} aria-label="Account">
+          <button
+            type="button"
+            onClick={() => navigate('/account')}
+            className="icon-button"
+            aria-label="Account"
+          >
             <UserAvatar user={user} size="md" />
           </button>
-          <Link to="/settings" aria-label="Settings">
+          <Link
+            to="/settings"
+            className="icon-button text-dark hover:bg-background"
+            aria-label="Settings"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-7 w-7"

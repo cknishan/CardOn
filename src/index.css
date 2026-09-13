@@ -45,6 +45,178 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+@layer components {
+  .surface-card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    background-color: var(--color-surface);
+  }
+
+  .surface-inset {
+    border-radius: var(--radius-md);
+    background-color: var(--color-background);
+  }
+
+  button.surface-inset {
+    cursor: pointer;
+  }
+
+  .field-control {
+    width: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 0.625rem 1rem;
+    color: var(--color-dark);
+    font-size: 0.875rem;
+    outline: none;
+    transition:
+      border-color 150ms ease,
+      box-shadow 150ms ease;
+  }
+
+  .field-control::placeholder {
+    color: var(--color-muted);
+  }
+
+  .field-control:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 25%, transparent);
+  }
+
+  .button-base {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.25rem;
+    cursor: pointer;
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease,
+      color 150ms ease,
+      opacity 150ms ease,
+      transform 150ms ease;
+  }
+
+  .button-base:focus-visible,
+  .button-compact:focus-visible,
+  .icon-button:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  .button-base:disabled,
+  .button-compact:disabled,
+  .icon-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+
+  .button-primary {
+    background-color: var(--color-dark);
+    color: white;
+  }
+
+  .button-primary:hover:not(:disabled),
+  .button-highlight:hover:not(:disabled),
+  .button-danger:hover:not(:disabled) {
+    opacity: 0.88;
+  }
+
+  .button-highlight {
+    background-color: var(--color-primary);
+    color: white;
+  }
+
+  .button-secondary {
+    border: 1px solid var(--color-border);
+    background-color: transparent;
+    color: var(--color-dark);
+    font-weight: 500;
+  }
+
+  .button-secondary:hover:not(:disabled) {
+    background-color: var(--color-background);
+  }
+
+  .button-danger {
+    background-color: var(--color-danger);
+    color: white;
+  }
+
+  .button-danger-outline {
+    border: 1px solid color-mix(in srgb, var(--color-danger) 40%, transparent);
+    background-color: transparent;
+    color: var(--color-danger);
+    font-weight: 500;
+  }
+
+  .button-danger-outline:hover:not(:disabled) {
+    background-color: color-mix(in srgb, var(--color-danger) 8%, transparent);
+    border-color: color-mix(in srgb, var(--color-danger) 60%, transparent);
+  }
+
+  .button-compact {
+    display: inline-flex;
+    min-height: 2rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background-color 150ms ease,
+      color 150ms ease,
+      opacity 150ms ease;
+  }
+
+  .icon-button {
+    display: inline-flex;
+    width: 3rem;
+    height: 3rem;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease,
+      color 150ms ease,
+      opacity 150ms ease,
+      transform 150ms ease;
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    padding: 0.25rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+}
+
 h1,
 h2,
 h3,

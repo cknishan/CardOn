@@ -19,10 +19,7 @@ function NotFoundPage() {
         <p className="text-sm text-muted mb-8">
           The page you're looking for doesn't exist or has been moved.
         </p>
-        <button
-          onClick={() => navigate('/')}
-          className="bg-dark text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition"
-        >
+        <button onClick={() => navigate('/')} className="button-base button-primary">
           Back to Dashboard
         </button>
       </div>
