@@ -2,6 +2,7 @@ import 'fake-indexeddb/auto'
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { FlashCardDatabase } from '../../src/database/dexie'
 import type { Deck, Flashcard, StudySession } from '../../src/models'
+import { calculateDeckStats } from '../../src/repositories/FlashcardRepository'
 
 let db: FlashCardDatabase
 
@@ -9,6 +10,7 @@ function deck(overrides: Partial<Deck> = {}): Deck {
   return {
     id: 'deck-1',
     name: 'Test Deck',
+    description: null,
     createdAt: '2024-01-15',
     updatedAt: '2024-01-15',
     deletedAt: null,
@@ -194,6 +196,40 @@ describe('cards', () => {
     await db.cards.clear()
     const all = await db.cards.toArray()
     expect(all).toEqual([])
+  })
+})
+
+describe('deck statistics', () => {
+  it('separates unseen, due-again, and completed cards', () => {
+    const stats = calculateDeckStats(
+      [
+        card({ id: 'unseen-due', interval: 0, dueDate: '2024-01-15' }),
+        card({ id: 'seen-due', interval: 1, dueDate: '2024-01-15' }),
+        card({ id: 'seen-overdue', interval: 3, dueDate: '2024-01-14' }),
+        card({ id: 'completed', interval: 6, dueDate: '2024-01-21' }),
+      ],
+      '2024-01-15'
+    )
+
+    expect(stats).toEqual({
+      total: 4,
+      seen: 3,
+      dueAgain: 2,
+      completed: 1,
+      studyDue: 3,
+    })
+  })
+
+  it('keeps new cards studyable without counting them as due again', () => {
+    const stats = calculateDeckStats(
+      [card({ id: 'new-card', interval: 0, repetitions: 0, dueDate: '2024-01-15' })],
+      '2024-01-15'
+    )
+
+    expect(stats.seen).toBe(0)
+    expect(stats.dueAgain).toBe(0)
+    expect(stats.completed).toBe(0)
+    expect(stats.studyDue).toBe(1)
   })
 })
 

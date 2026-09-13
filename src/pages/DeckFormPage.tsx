@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { DeckRepository } from '../repositories/DeckRepository'
 import type { Deck } from '../models'
+import { getTextAttributes } from '../utils/textLanguage'
 
 function DeckFormPage() {
   const { deckId } = useParams()
   const navigate = useNavigate()
   const [deck, setDeck] = useState<Deck | null>()
   const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
   const [error, setError] = useState('')
 
   const isEdit = !!deckId
@@ -17,7 +19,10 @@ function DeckFormPage() {
     async function load() {
       const d = await DeckRepository.getById(deckId!)
       setDeck(d)
-      if (d) setName(d.name)
+      if (d) {
+        setName(d.name)
+        setDescription(d.description ?? '')
+      }
     }
     load()
   }, [deckId])
@@ -34,9 +39,12 @@ function DeckFormPage() {
       return
     }
     if (isEdit) {
-      await DeckRepository.update(deckId!, { name: trimmed })
+      await DeckRepository.update(deckId!, {
+        name: trimmed,
+        description: description.trim() || null,
+      })
     } else {
-      await DeckRepository.create({ name: trimmed })
+      await DeckRepository.create({ name: trimmed, description: description.trim() || null })
     }
     navigate('/')
   }
@@ -66,19 +74,37 @@ function DeckFormPage() {
   return (
     <div className="min-h-screen bg-background px-4 py-8">
       <div className="mx-auto max-w-lg">
+        {isEdit && (
+          <button
+            type="button"
+            onClick={() => navigate(`/decks/${deckId}`)}
+            className="text-sm text-muted hover:text-dark transition mb-4 flex items-center gap-1"
+          >
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+              aria-hidden="true"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to {deck?.name ?? 'deck'}
+          </button>
+        )}
+
         <h1 className="text-2xl font-bold text-dark mb-6">
           {isEdit ? 'Edit Deck' : 'Create New Deck'}
         </h1>
 
-        <form
-          onSubmit={handleSubmit}
-          className="bg-surface rounded-xl border border-border p-6 space-y-5"
-        >
+        <form onSubmit={handleSubmit} className="surface-card space-y-5 p-6">
           <div>
             <label htmlFor="deckName" className="block text-sm font-medium text-dark mb-1.5">
               Deck Name
             </label>
             <input
+              {...getTextAttributes(name)}
               id="deckName"
               type="text"
               value={name}
@@ -89,24 +115,39 @@ function DeckFormPage() {
               placeholder="e.g. French Basics"
               maxLength={100}
               autoFocus
-              className="w-full border border-border rounded-lg px-4 py-2.5 text-sm text-dark placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+              className="multilingual-text field-control"
             />
             {error && <p className="text-danger text-xs mt-1.5">{error}</p>}
             <p className="text-muted text-xs mt-1.5 text-right">{name.length}/100</p>
+          </div>
+
+          <div>
+            <label htmlFor="deckDescription" className="block text-sm font-medium text-dark mb-1.5">
+              Description <span className="text-muted font-normal">(optional)</span>
+            </label>
+            <textarea
+              {...getTextAttributes(description)}
+              id="deckDescription"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="What will you study in this deck?"
+              rows={4}
+              className="multilingual-text field-control resize-none"
+            />
           </div>
 
           <div className="flex gap-3 pt-2">
             <button
               type="submit"
               disabled={!name.trim()}
-              className="flex-1 bg-dark text-white py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition disabled:opacity-40"
+              className="button-base button-primary flex-1"
             >
               {isEdit ? 'Save Changes' : 'Create Deck'}
             </button>
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="flex-1 border border-border text-dark py-2.5 rounded-xl text-sm font-medium hover:bg-background transition"
+              className="button-base button-secondary flex-1"
             >
               Cancel
             </button>
@@ -116,7 +157,7 @@ function DeckFormPage() {
             <button
               type="button"
               onClick={handleDelete}
-              className="w-full text-danger text-sm font-medium py-2 hover:underline transition"
+              className="button-base button-danger-outline w-full"
             >
               Delete this deck
             </button>

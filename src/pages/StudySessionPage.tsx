@@ -5,6 +5,7 @@ import { FlashcardRepository } from '../repositories/FlashcardRepository'
 import { applySM2, RATINGS } from '../utils/sm2'
 import type { Rating, RatingConfig } from '../utils/sm2'
 import type { Flashcard, Deck } from '../models'
+import { getTextAttributes } from '../utils/textLanguage'
 
 function StudySessionPage() {
   const { deckId } = useParams<{ deckId: string }>()
@@ -93,15 +94,20 @@ function StudySessionPage() {
   if (!sessionStarted) {
     return (
       <div className="min-h-screen bg-background px-4 py-8 flex items-center justify-center">
-        <div className="max-w-md w-full text-center bg-surface rounded-xl border border-border p-10">
-          <div className="text-6xl mb-5">📖</div>
-          <h1 className="text-xl font-bold text-dark mb-2">{deck.name}</h1>
+        <div className="surface-card w-full max-w-md p-8 text-center shadow-sm sm:p-10">
+          <h1
+            {...getTextAttributes(deck.name)}
+            className="multilingual-display mb-3 text-xl font-bold text-dark"
+          >
+            {deck.name}
+          </h1>
           {dueCards.length === 0 ? (
             <>
               <p className="text-muted text-sm mb-6">Nothing due today! Come back tomorrow.</p>
               <button
+                type="button"
                 onClick={() => navigate(`/decks/${deckId}`)}
-                className="bg-dark text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition"
+                className="button-base button-primary"
               >
                 Back to Deck
               </button>
@@ -112,10 +118,11 @@ function StudySessionPage() {
                 {dueCards.length} card{dueCards.length !== 1 ? 's' : ''} due for review
               </p>
               <button
+                type="button"
                 onClick={startSession}
-                className="mt-6 bg-dark text-white px-8 py-3 rounded-xl text-base font-semibold hover:opacity-90 transition"
+                className="button-base button-primary mt-6 px-8 py-3 text-base"
               >
-                ▶ Start Studying
+                Start Studying
               </button>
             </>
           )}
@@ -127,7 +134,7 @@ function StudySessionPage() {
   if (sessionComplete) {
     return (
       <div className="min-h-screen bg-background px-4 py-8 flex items-center justify-center">
-        <div className="max-w-md w-full text-center bg-surface rounded-xl border border-border p-10">
+        <div className="surface-card w-full max-w-md p-10 text-center">
           <div className="text-6xl mb-5">🎉</div>
           <h1 className="text-xl font-bold text-dark mb-2">Session Complete!</h1>
           <p className="text-success font-semibold text-lg mb-6">
@@ -136,7 +143,7 @@ function StudySessionPage() {
           <div className="flex gap-3 justify-center">
             <button
               onClick={() => navigate(`/decks/${deckId}`)}
-              className="bg-dark text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition"
+              className="button-base button-primary"
             >
               Back to Decks
             </button>
@@ -169,8 +176,11 @@ function StudySessionPage() {
           />
         </div>
 
-        <div className="bg-surface rounded-xl border border-border p-8 sm:p-10">
-          <div className="text-lg sm:text-xl font-semibold text-dark mb-2 leading-relaxed">
+        <div className="surface-card p-8 sm:p-10">
+          <div
+            {...getTextAttributes(card.question)}
+            className="multilingual-text text-lg sm:text-xl font-semibold text-dark mb-2 leading-relaxed"
+          >
             {card.question}
           </div>
 
@@ -178,7 +188,7 @@ function StudySessionPage() {
             {card.hint && (
               <button
                 onClick={toggleHint}
-                className={`text-xs font-medium px-3 py-1.5 rounded-lg transition ${
+                className={`button-compact ${
                   showHint
                     ? 'bg-warning/20 text-warning'
                     : 'bg-border/50 text-muted hover:text-dark'
@@ -190,7 +200,7 @@ function StudySessionPage() {
             {card.note && (
               <button
                 onClick={toggleNote}
-                className={`text-xs font-medium px-3 py-1.5 rounded-lg transition ${
+                className={`button-compact ${
                   showNote ? 'bg-accent/20 text-accent' : 'bg-border/50 text-muted hover:text-dark'
                 }`}
               >
@@ -200,13 +210,19 @@ function StudySessionPage() {
           </div>
 
           {showHint && card.hint && (
-            <div className="text-sm text-warning bg-warning/10 rounded-lg px-4 py-3 mb-4">
+            <div
+              {...getTextAttributes(card.hint)}
+              className="multilingual-text mb-4 rounded-md bg-warning/10 px-4 py-3 text-sm text-warning"
+            >
               💡 {card.hint}
             </div>
           )}
 
           {showNote && card.note && (
-            <div className="text-sm text-accent bg-accent/10 rounded-lg px-4 py-3 mb-4">
+            <div
+              {...getTextAttributes(card.note)}
+              className="multilingual-text mb-4 rounded-md bg-accent/10 px-4 py-3 text-sm text-accent"
+            >
               📝 {card.note}
             </div>
           )}
@@ -214,14 +230,17 @@ function StudySessionPage() {
           {!showAnswer ? (
             <button
               onClick={() => setShowAnswer(true)}
-              className="w-full mt-2 bg-primary text-white py-3 rounded-xl text-sm font-semibold hover:opacity-90 transition"
+              className="button-base button-highlight mt-2 w-full py-3"
             >
               Show Answer
             </button>
           ) : (
             <>
               <div className="mt-6 pt-6 border-t border-border">
-                <div className="text-base sm:text-lg text-dark leading-relaxed">
+                <div
+                  {...getTextAttributes(card.answer)}
+                  className="multilingual-text text-base sm:text-lg text-dark leading-relaxed"
+                >
                   <span className="font-medium">Answer: </span>
                   {card.answer}
                 </div>
@@ -232,7 +251,7 @@ function StudySessionPage() {
                   <button
                     key={key}
                     onClick={() => handleRate(key)}
-                    className={`${config.bg} ${config.textColor} py-3 rounded-xl text-sm font-bold hover:opacity-80 transition`}
+                    className={`button-base w-full py-3 font-bold hover:opacity-80 ${config.bg} ${config.textColor}`}
                   >
                     {config.label}
                   </button>

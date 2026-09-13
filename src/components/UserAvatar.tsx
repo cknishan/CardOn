@@ -7,6 +7,7 @@ interface UserAvatarProps {
 
 function UserAvatar({ user, size = 'md' }: UserAvatarProps) {
   const sizeClass = size === 'sm' ? 'h-8 w-8 text-xs' : 'h-12 w-12 text-base'
+  const iconSizeClass = size === 'sm' ? 'h-5 w-5' : 'h-8 w-8'
 
   if (!user) {
     return (
@@ -16,7 +17,7 @@ function UserAvatar({ user, size = 'md' }: UserAvatarProps) {
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-4 w-4"
+          className={iconSizeClass}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"

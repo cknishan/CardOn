@@ -29,7 +29,7 @@ function AccountPage() {
 
         <h1 className="text-2xl font-bold text-dark mb-6">Account</h1>
 
-        <section className="bg-surface rounded-xl border border-border p-6 mb-5">
+        <section className="surface-card mb-5 p-6">
           {isLoggedIn && user ? (
             <>
               <div className="flex items-center gap-4 mb-5">
@@ -39,10 +39,7 @@ function AccountPage() {
                   <p className="text-xs text-muted mt-0.5 break-all">User ID: {user.id}</p>
                 </div>
               </div>
-              <button
-                onClick={logout}
-                className="w-full bg-dark text-white py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition"
-              >
+              <button onClick={logout} className="button-base button-primary w-full">
                 Sign Out
               </button>
             </>
@@ -52,17 +49,14 @@ function AccountPage() {
                 <p className="text-sm font-semibold text-dark">Not signed in</p>
                 <p className="text-xs text-muted mt-1">Sign in to sync your data across devices.</p>
               </div>
-              <button
-                onClick={login}
-                className="w-full bg-dark text-white py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition"
-              >
+              <button onClick={login} className="button-base button-primary w-full">
                 Sign in with Google
               </button>
             </>
           )}
         </section>
 
-        <section className="bg-surface rounded-xl border border-border p-6">
+        <section className="surface-card p-6">
           <h2 className="text-base font-semibold text-dark mb-4">Cloud Sync</h2>
           <div className="flex items-center justify-between gap-3">
             <p className="text-xs text-muted">

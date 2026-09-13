@@ -8,10 +8,13 @@ create table if not exists public.decks (
   id uuid primary key,
   user_id uuid not null references auth.users(id) on delete cascade,
   name text not null,
+  description text,
   "createdAt" timestamptz not null,
   "updatedAt" timestamptz not null,
   "deletedAt" timestamptz
 );
+
+alter table public.decks add column if not exists description text;
 
 alter table public.decks enable row level security;
 

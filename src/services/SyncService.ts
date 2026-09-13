@@ -42,6 +42,7 @@ export class SyncService {
         } else {
           await DeckRepository.update(remoteDeck.id, {
             name: remoteDeck.name,
+            description: remoteDeck.description ?? null,
             deletedAt: remoteDeck.deletedAt,
           })
         }
