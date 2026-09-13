@@ -1,6 +1,26 @@
 import { db } from '../database/dexie'
 import type { Flashcard } from '../models'
 
+export interface DeckStats {
+  total: number
+  seen: number
+  dueAgain: number
+  completed: number
+  studyDue: number
+}
+
+export function calculateDeckStats(cards: Flashcard[], today: string): DeckStats {
+  const seenCards = cards.filter((card) => card.interval > 0)
+
+  return {
+    total: cards.length,
+    seen: seenCards.length,
+    dueAgain: seenCards.filter((card) => card.dueDate <= today).length,
+    completed: seenCards.filter((card) => card.dueDate > today).length,
+    studyDue: cards.filter((card) => card.dueDate <= today).length,
+  }
+}
+
 export const FlashcardRepository = {
   async getByDeckId(deckId: string): Promise<Flashcard[]> {
     return db.cards.where('deckId').equals(deckId).toArray()
@@ -19,6 +39,14 @@ export const FlashcardRepository = {
 
   async getTotalCount(deckId: string): Promise<number> {
     return db.cards.where('deckId').equals(deckId).count()
+  },
+
+  async getDeckStats(
+    deckId: string,
+    today = new Date().toISOString().split('T')[0]
+  ): Promise<DeckStats> {
+    const cards = await this.getByDeckId(deckId)
+    return calculateDeckStats(cards, today)
   },
 
   async getById(id: string): Promise<Flashcard | undefined> {

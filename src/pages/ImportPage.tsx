@@ -5,6 +5,7 @@ import { FlashcardRepository } from '../repositories/FlashcardRepository'
 import { parseMarkdown } from '../utils/markdownParser'
 import type { ParsedCard } from '../utils/markdownParser'
 import type { Deck } from '../models'
+import { getTextAttributes } from '../utils/textLanguage'
 
 function ImportPage() {
   const { deckId } = useParams<{ deckId: string }>()
@@ -155,10 +156,10 @@ function ImportPage() {
               setActiveTab('paste')
               handleReset()
             }}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+            className={`button-compact px-4 py-2 ${
               activeTab === 'paste'
                 ? 'bg-dark text-white'
-                : 'bg-surface border border-border text-muted hover:text-dark'
+                : 'border border-border bg-surface text-muted hover:text-dark'
             }`}
           >
             Paste Text
@@ -168,10 +169,10 @@ function ImportPage() {
               setActiveTab('file')
               handleReset()
             }}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+            className={`button-compact px-4 py-2 ${
               activeTab === 'file'
                 ? 'bg-dark text-white'
-                : 'bg-surface border border-border text-muted hover:text-dark'
+                : 'border border-border bg-surface text-muted hover:text-dark'
             }`}
           >
             Upload File
@@ -185,12 +186,12 @@ function ImportPage() {
               onChange={(e) => setPastedText(e.target.value)}
               placeholder={`Q: What is 2 + 2?\nA: 4\nHint: Think of pairs\n\nQ: Capital of France?\nA: Paris`}
               rows={10}
-              className="w-full border border-border rounded-xl px-4 py-3 text-sm text-dark placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none font-mono"
+              className="field-control resize-none py-3 font-mono"
             />
             <button
               onClick={handleParseText}
               disabled={!pastedText.trim()}
-              className="mt-3 w-full bg-dark text-white py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition disabled:opacity-40"
+              className="button-base button-primary mt-3 w-full"
             >
               Parse Cards
             </button>
@@ -202,7 +203,7 @@ function ImportPage() {
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onClick={() => fileInputRef.current?.click()}
-            className="bg-surface border-2 border-dashed border-border rounded-xl p-12 text-center cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition"
+            className="surface-card cursor-pointer border-2 border-dashed p-12 text-center transition hover:border-primary/40 hover:bg-primary/5"
           >
             <input
               ref={fileInputRef}
@@ -220,7 +221,7 @@ function ImportPage() {
         )}
 
         {parsedCards.length > 0 && !imported && (
-          <div className="mt-6 bg-surface rounded-xl border border-border p-5">
+          <div className="surface-card mt-6 p-5">
             <h2 className="text-sm font-semibold text-dark mb-3">
               Preview ({parsedCards.length} card{parsedCards.length !== 1 ? 's' : ''} parsed)
             </h2>
@@ -228,31 +229,35 @@ function ImportPage() {
               {parsedCards.map((card, i) => (
                 <div
                   key={i}
-                  className={`text-xs p-3 rounded-lg ${card.errors.length > 0 ? 'bg-again-bg' : 'bg-good-bg'}`}
+                  className={`rounded-sm p-3 text-xs ${card.errors.length > 0 ? 'bg-again-bg' : 'bg-good-bg'}`}
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <span className="font-medium">Q: {card.question}</span>
+                    <span
+                      {...getTextAttributes(card.question)}
+                      className="multilingual-text font-medium"
+                    >
+                      Q: {card.question}
+                    </span>
                     {card.errors.length > 0 && (
                       <span className="text-again-text shrink-0 ml-2">
                         {card.errors.join('; ')}
                       </span>
                     )}
                   </div>
-                  <span className="text-muted">A: {card.answer}</span>
+                  <span
+                    {...getTextAttributes(card.answer)}
+                    className="multilingual-text text-muted"
+                  >
+                    A: {card.answer}
+                  </span>
                 </div>
               ))}
             </div>
             <div className="flex gap-3 mt-5">
-              <button
-                onClick={handleImport}
-                className="flex-1 bg-dark text-white py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition"
-              >
+              <button onClick={handleImport} className="button-base button-primary flex-1">
                 Import {parsedCards.length} card{parsedCards.length !== 1 ? 's' : ''}
               </button>
-              <button
-                onClick={handleReset}
-                className="flex-1 border border-border text-dark py-2.5 rounded-xl text-sm font-medium hover:bg-background transition"
-              >
+              <button onClick={handleReset} className="button-base button-secondary flex-1">
                 Cancel
               </button>
             </div>
@@ -260,7 +265,7 @@ function ImportPage() {
         )}
 
         {imported && (
-          <div className="mt-6 bg-surface rounded-xl border border-border p-6 text-center">
+          <div className="surface-card mt-6 p-6 text-center">
             <div className="text-4xl mb-3">✅</div>
             <h2 className="text-lg font-semibold text-success mb-2">
               {successCount} card{successCount !== 1 ? 's' : ''} imported successfully!
@@ -273,7 +278,11 @@ function ImportPage() {
                 </p>
                 <div className="space-y-1.5 max-h-32 overflow-y-auto">
                   {errorCards.map((card, i) => (
-                    <p key={i} className="text-xs text-muted">
+                    <p
+                      key={i}
+                      {...getTextAttributes(card.question)}
+                      className="multilingual-text text-xs text-muted"
+                    >
                       Q: {card.question} — {card.errors.join('; ')}
                     </p>
                   ))}
@@ -282,7 +291,7 @@ function ImportPage() {
             )}
             <button
               onClick={() => navigate(`/decks/${deckId}`)}
-              className="mt-5 bg-dark text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition"
+              className="button-base button-primary mt-5"
             >
               Back to {deck.name}
             </button>

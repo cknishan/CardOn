@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { DeckRepository } from '../repositories/DeckRepository'
 import { FlashcardRepository } from '../repositories/FlashcardRepository'
 import type { Deck, Flashcard } from '../models'
+import { getTextAttributes } from '../utils/textLanguage'
 
 function CardFormPage() {
   const { deckId, cardId } = useParams<{ deckId: string; cardId: string }>()
@@ -113,15 +114,13 @@ function CardFormPage() {
           {isEdit ? 'Edit Card' : 'Add New Card'}
         </h1>
 
-        <form
-          onSubmit={handleSubmit}
-          className="bg-surface rounded-xl border border-border p-6 space-y-5"
-        >
+        <form onSubmit={handleSubmit} className="surface-card space-y-5 p-6">
           <div>
             <label htmlFor="question" className="block text-sm font-medium text-dark mb-1.5">
               Question <span className="text-danger">*</span>
             </label>
             <textarea
+              {...getTextAttributes(question)}
               id="question"
               value={question}
               onChange={(e) => {
@@ -131,7 +130,7 @@ function CardFormPage() {
               placeholder="Enter the question"
               rows={3}
               autoFocus
-              className="w-full border border-border rounded-lg px-4 py-2.5 text-sm text-dark placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+              className="multilingual-text field-control resize-none"
             />
             {errors.question && <p className="text-danger text-xs mt-1.5">{errors.question}</p>}
           </div>
@@ -141,6 +140,7 @@ function CardFormPage() {
               Answer <span className="text-danger">*</span>
             </label>
             <textarea
+              {...getTextAttributes(answer)}
               id="answer"
               value={answer}
               onChange={(e) => {
@@ -149,7 +149,7 @@ function CardFormPage() {
               }}
               placeholder="Enter the answer"
               rows={3}
-              className="w-full border border-border rounded-lg px-4 py-2.5 text-sm text-dark placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+              className="multilingual-text field-control resize-none"
             />
             {errors.answer && <p className="text-danger text-xs mt-1.5">{errors.answer}</p>}
           </div>
@@ -159,12 +159,13 @@ function CardFormPage() {
               Hint <span className="text-muted font-normal">(optional)</span>
             </label>
             <textarea
+              {...getTextAttributes(hint)}
               id="hint"
               value={hint}
               onChange={(e) => setHint(e.target.value)}
               placeholder="A helpful hint"
               rows={2}
-              className="w-full border border-border rounded-lg px-4 py-2.5 text-sm text-dark placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+              className="multilingual-text field-control resize-none"
             />
           </div>
 
@@ -173,12 +174,13 @@ function CardFormPage() {
               Note <span className="text-muted font-normal">(optional)</span>
             </label>
             <textarea
+              {...getTextAttributes(note)}
               id="note"
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Additional notes"
               rows={2}
-              className="w-full border border-border rounded-lg px-4 py-2.5 text-sm text-dark placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-none"
+              className="multilingual-text field-control resize-none"
             />
           </div>
 
@@ -186,14 +188,14 @@ function CardFormPage() {
             <button
               type="submit"
               disabled={!question.trim() || !answer.trim()}
-              className="flex-1 bg-dark text-white py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition disabled:opacity-40"
+              className="button-base button-primary flex-1"
             >
               {isEdit ? 'Save Changes' : 'Add Card'}
             </button>
             <button
               type="button"
               onClick={() => navigate(`/decks/${deckId}`)}
-              className="flex-1 border border-border text-dark py-2.5 rounded-xl text-sm font-medium hover:bg-background transition"
+              className="button-base button-secondary flex-1"
             >
               Cancel
             </button>

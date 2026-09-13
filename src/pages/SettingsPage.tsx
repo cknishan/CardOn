@@ -142,12 +142,12 @@ function SettingsPage() {
 
         <h1 className="text-2xl font-bold text-dark mb-6">Settings</h1>
 
-        <section className="bg-surface rounded-xl border border-border p-6 mb-5">
+        <section className="surface-card mb-5 p-6">
           <h2 className="text-base font-semibold text-dark mb-4">Data Management</h2>
           <div className="space-y-3">
             <button
               onClick={handleExport}
-              className="w-full flex items-center justify-between bg-background hover:bg-border/30 transition rounded-lg px-4 py-3"
+              className="surface-inset flex w-full items-center justify-between px-4 py-3 text-left transition hover:bg-border/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
               <div className="text-left">
                 <p className="text-sm font-medium text-dark">Export All Data</p>
@@ -169,7 +169,7 @@ function SettingsPage() {
             </button>
             <button
               onClick={handleImport}
-              className="w-full flex items-center justify-between bg-background hover:bg-border/30 transition rounded-lg px-4 py-3"
+              className="surface-inset flex w-full items-center justify-between px-4 py-3 text-left transition hover:bg-border/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
               <div className="text-left">
                 <p className="text-sm font-medium text-dark">Import Backup</p>
@@ -192,12 +192,12 @@ function SettingsPage() {
           </div>
         </section>
 
-        <section className="bg-surface rounded-xl border border-border p-6 mb-5">
+        <section className="surface-card mb-5 p-6">
           <h2 className="text-base font-semibold text-dark mb-4">Cloud Sync</h2>
           <div className="space-y-3">
             {isLoggedIn ? (
               <>
-                <div className="flex items-center justify-between bg-background rounded-lg px-4 py-3">
+                <div className="surface-inset flex items-center justify-between px-4 py-3">
                   <div className="text-left">
                     <p className="text-sm font-medium text-dark">Signed in as</p>
                     <p className="text-xs text-muted">{user?.email}</p>
@@ -212,7 +212,7 @@ function SettingsPage() {
                 <button
                   onClick={handleSync}
                   disabled={syncState === 'syncing'}
-                  className="w-full flex items-center justify-between bg-background hover:bg-border/30 transition rounded-lg px-4 py-3 disabled:opacity-50"
+                  className="surface-inset flex w-full items-center justify-between px-4 py-3 text-left transition hover:bg-border/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <div className="text-left">
                     <p className="text-sm font-medium text-dark">
@@ -242,7 +242,7 @@ function SettingsPage() {
             ) : (
               <button
                 onClick={login}
-                className="w-full flex items-center justify-between bg-background hover:bg-border/30 transition rounded-lg px-4 py-3"
+                className="surface-inset flex w-full items-center justify-between px-4 py-3 text-left transition hover:bg-border/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 <div className="text-left">
                   <p className="text-sm font-medium text-dark">Sign in with Google</p>
@@ -266,7 +266,7 @@ function SettingsPage() {
           </div>
         </section>
 
-        <section className="bg-surface rounded-xl border border-border p-6 mb-5">
+        <section className="surface-card mb-5 p-6">
           <h2 className="text-base font-semibold text-dark mb-4">About</h2>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
@@ -296,15 +296,12 @@ function SettingsPage() {
           </a>
         </section>
 
-        <section className="bg-surface rounded-xl border border-danger/30 p-6">
+        <section className="surface-card border-danger/30 p-6">
           <h2 className="text-base font-semibold text-danger mb-4">Danger Zone</h2>
           <p className="text-xs text-muted mb-4">
             Permanently delete all your data. This cannot be undone.
           </p>
-          <button
-            onClick={handleDeleteAll}
-            className="w-full bg-danger text-white py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition"
-          >
+          <button onClick={handleDeleteAll} className="button-base button-danger w-full">
             Delete All Data
           </button>
         </section>
