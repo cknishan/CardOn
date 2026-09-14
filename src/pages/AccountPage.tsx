@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../components/authContext'
+import GoogleSignInButton from '../components/GoogleSignInButton'
 import UserAvatar from '../components/UserAvatar'
 
 function AccountPage() {
@@ -49,9 +50,7 @@ function AccountPage() {
                 <p className="text-sm font-semibold text-dark">Not signed in</p>
                 <p className="text-xs text-muted mt-1">Sign in to sync your data across devices.</p>
               </div>
-              <button onClick={login} className="button-base button-primary w-full">
-                Sign in with Google
-              </button>
+              <GoogleSignInButton onClick={login} />
             </>
           )}
         </section>

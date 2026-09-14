@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { db } from '../database/dexie'
 import { useAuth } from '../components/authContext'
+import GoogleSignInButton from '../components/GoogleSignInButton'
 import { SyncService } from '../services/SyncService'
 import { supabaseProvider } from '../providers/SupabaseProvider'
 
@@ -240,28 +241,10 @@ function SettingsPage() {
                 </button>
               </>
             ) : (
-              <button
-                onClick={login}
-                className="surface-inset flex w-full items-center justify-between px-4 py-3 text-left transition hover:bg-border/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-              >
-                <div className="text-left">
-                  <p className="text-sm font-medium text-dark">Sign in with Google</p>
-                  <p className="text-xs text-muted">Sync your data across devices</p>
-                </div>
-                <svg
-                  className="w-5 h-5 text-muted"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-                  />
-                </svg>
-              </button>
+              <div className="surface-inset space-y-3 p-4">
+                <p className="text-xs text-muted">Sign in to sync your data across devices.</p>
+                <GoogleSignInButton onClick={login} />
+              </div>
             )}
           </div>
         </section>
