@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { db } from '../database/dexie'
 import { useAuth } from '../components/authContext'
 import GoogleSignInButton from '../components/GoogleSignInButton'
@@ -250,7 +250,7 @@ function SettingsPage() {
         </section>
 
         <section className="surface-card mb-5 p-6">
-          <h2 className="text-base font-semibold text-dark mb-4">About</h2>
+          <h2 className="text-base font-semibold text-dark mb-4">App Information</h2>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-muted">Version</span>
@@ -269,14 +269,50 @@ function SettingsPage() {
               <span className="text-dark font-medium">{counts.sessions}</span>
             </div>
           </div>
-          <a
-            href="https://github.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block mt-4 text-xs text-muted hover:text-primary transition"
-          >
-            Feedback / Support ↗
-          </a>
+        </section>
+
+        <section className="surface-card mb-5 p-6">
+          <h2 className="text-base font-semibold text-dark mb-4">CardOn Information</h2>
+          <nav aria-label="CardOn information" className="space-y-2">
+            {[
+              {
+                to: '/about',
+                label: 'About CardOn',
+                description: 'Learn about CardOn and fast bulk import',
+              },
+              {
+                to: '/privacy',
+                label: 'Privacy Policy',
+                description: 'See how CardOn handles your information',
+              },
+              {
+                to: '/terms',
+                label: 'Terms of Service',
+                description: 'Read the terms for using CardOn',
+              },
+            ].map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="surface-inset flex items-center justify-between gap-4 px-4 py-3 transition hover:bg-border/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              >
+                <span>
+                  <span className="block text-sm font-medium text-dark">{item.label}</span>
+                  <span className="mt-0.5 block text-xs text-muted">{item.description}</span>
+                </span>
+                <svg
+                  className="h-4 w-4 shrink-0 text-muted"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  aria-hidden="true"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            ))}
+          </nav>
         </section>
 
         <section className="surface-card border-danger/30 p-6">

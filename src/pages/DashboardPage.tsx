@@ -60,6 +60,12 @@ function DashboardPage() {
   return (
     <div className="min-h-screen bg-background px-4 py-8">
       <div className="mx-auto max-w-252.5">
+        <title>CardOn | Fast flashcard creation and study</title>
+        <meta
+          name="description"
+          content="CardOn is a local-first flashcard app with fast bulk import, spaced repetition, optional Google sign-in, and on-demand cloud sync."
+        />
+
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-dark">Your Decks</h1>

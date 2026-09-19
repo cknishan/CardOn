@@ -30,6 +30,9 @@ import StudySessionPage from './pages/StudySessionPage'
 import SettingsPage from './pages/SettingsPage'
 import AccountPage from './pages/AccountPage'
 import NotFoundPage from './pages/NotFoundPage'
+import AboutPage from './pages/AboutPage'
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
+import TermsOfServicePage from './pages/TermsOfServicePage'
 
 function App() {
   return (
@@ -39,6 +42,9 @@ function App() {
           <Route path="/" element={<DashboardPage />} />
           <Route path="/account" element={<AccountPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/terms" element={<TermsOfServicePage />} />
           <Route path="/decks/new" element={<DeckFormPage />} />
           <Route path="/decks/:deckId" element={<DeckDetailPage />} />
           <Route path="/decks/:deckId/edit" element={<DeckFormPage />} />

@@ -4,10 +4,10 @@
  * Provides the top navigation bar with branding and a settings link,
  * plus a centered content area.
  *
- * Route: rendered as a wrapper in App.tsx — no route of its own.
+ * Route: rendered as a wrapper in App.tsx, with no route of its own.
  */
 
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import { useAuth } from './authContext'
 import UserAvatar from './UserAvatar'
@@ -23,10 +23,17 @@ interface LayoutProps {
  */
 function Layout({ children }: LayoutProps) {
   const navigate = useNavigate()
+  const location = useLocation()
   const { user } = useAuth()
+  const informationRoutes = ['/about', '/privacy', '/terms']
+  const currentPath = location.pathname.replace(/\/$/, '') || '/'
+
+  if (informationRoutes.includes(currentPath)) {
+    return <main className="min-h-screen">{children}</main>
+  }
 
   return (
-    <div className="min-h-screen">
+    <div className="flex min-h-screen flex-col">
       <nav className="flex items-center justify-between border-b bg-white px-6 py-4 sm:px-8">
         <Link
           to="/"
@@ -36,7 +43,7 @@ function Layout({ children }: LayoutProps) {
           <img src="/logo.png" alt="" className="h-11 w-11 object-contain" />
           <span>CardOn</span>
         </Link>
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-2 sm:gap-4">
           <button
             type="button"
             onClick={() => navigate('/account')}
@@ -72,7 +79,7 @@ function Layout({ children }: LayoutProps) {
           </Link>
         </div>
       </nav>
-      <main className="mx-auto max-w-7xl px-4 py-6">{children}</main>
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6">{children}</main>
     </div>
   )
 }
