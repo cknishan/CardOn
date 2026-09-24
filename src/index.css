@@ -266,6 +266,26 @@ button:disabled {
     font-weight: 600;
     color: var(--color-muted);
   }
+
+  .deck-progress-tooltip {
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  @media (max-width: 639px) {
+    .deck-progress-tooltip[data-mobile-open='true'] {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+
+  @media (min-width: 640px) {
+    .deck-progress-trigger:hover .deck-progress-tooltip,
+    .deck-progress-trigger:focus-visible .deck-progress-tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
 }
 
 h1,

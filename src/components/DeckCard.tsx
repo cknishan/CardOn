@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Deck } from '../models'
 import type { DeckStats } from '../repositories/FlashcardRepository'
@@ -10,6 +11,13 @@ interface DeckCardProps {
 
 function DeckCard({ deck, stats }: DeckCardProps) {
   const navigate = useNavigate()
+  const [isMobileProgressOpen, setIsMobileProgressOpen] = useState(false)
+
+  function handleProgressClick() {
+    if (window.matchMedia('(max-width: 639px)').matches) {
+      setIsMobileProgressOpen((isOpen) => !isOpen)
+    }
+  }
 
   return (
     <article className="surface-card flex aspect-square w-full max-w-82.5 flex-col p-5 shadow-sm">
@@ -23,9 +31,12 @@ function DeckCard({ deck, stats }: DeckCardProps) {
 
         <button
           type="button"
-          className="group relative w-20 shrink-0 rounded-xl bg-[#fff4f4] px-3 py-3 text-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          onClick={handleProgressClick}
+          onBlur={() => setIsMobileProgressOpen(false)}
+          className="deck-progress-trigger relative w-20 shrink-0 rounded-xl bg-[#fff4f4] px-3 py-3 text-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           aria-label={`${stats.seen} of ${stats.total} cards seen, ${stats.dueAgain} due again, ${stats.completed} completed and not due`}
           aria-describedby={`deck-progress-${deck.id}`}
+          aria-expanded={isMobileProgressOpen}
         >
           <div className="whitespace-nowrap text-base text-dark">
             {stats.seen} / <span className="font-bold">{stats.total}</span>
@@ -37,7 +48,8 @@ function DeckCard({ deck, stats }: DeckCardProps) {
           <span
             id={`deck-progress-${deck.id}`}
             role="tooltip"
-            className="invisible absolute right-0 top-[calc(100%+0.5rem)] z-10 w-52 rounded-sm bg-dark px-3 py-2 text-left text-xs font-normal leading-relaxed text-white opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
+            data-mobile-open={isMobileProgressOpen}
+            className="deck-progress-tooltip absolute right-0 top-[calc(100%+0.5rem)] z-10 w-52 rounded-sm bg-dark px-3 py-2 text-left text-xs font-normal leading-relaxed text-white shadow-lg transition"
           >
             {stats.seen} seen out of {stats.total} total. {stats.dueAgain} due again.{' '}
             {stats.completed} completed and not due.
