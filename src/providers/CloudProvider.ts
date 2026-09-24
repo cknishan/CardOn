@@ -14,6 +14,7 @@ export interface CloudUser {
 export interface CloudProvider {
   login(): Promise<void>
   logout(): Promise<void>
+  deleteAccount(): Promise<void>
   getUser(): CloudUser | null
   onAuthChange(callback: (user: CloudUser | null) => void): () => void
   uploadAll(data: SyncPayload): Promise<void>

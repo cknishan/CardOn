@@ -9,7 +9,7 @@ function PrivacyPolicyPage() {
       introduction="CardOn is designed to work locally first. This policy explains what information the app handles, why it is used, and the choices available to you."
       documentTitle="Privacy Policy | CardOn"
     >
-      <p className="information-date">Effective date: 19 September 2026</p>
+      <p className="information-date">Effective date: 25 September 2026</p>
 
       <section>
         <h2>1. Overview</h2>
@@ -117,12 +117,17 @@ function PrivacyPolicyPage() {
           <li>You can export your local data as a JSON backup.</li>
           <li>You can delete individual decks and cards or clear all local data in Settings.</li>
           <li>
+            When signed in, you can permanently delete your CardOn account and synchronized data
+            from Settings.
+          </li>
+          <li>
             Signing out ends your authenticated session but does not delete synchronized data.
           </li>
         </ul>
         <p>
-          To request access to or deletion of synchronized account data, contact the CardOn operator
-          using the user support contact displayed on the Google OAuth consent screen.
+          Deleting your account removes the live authentication account and associated synchronized
+          CardOn records. For other privacy requests, contact the CardOn operator using the user
+          support contact displayed on the Google OAuth consent screen.
         </p>
       </section>
 
