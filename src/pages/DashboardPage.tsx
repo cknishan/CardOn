@@ -76,13 +76,13 @@ function DashboardPage() {
           <button
             type="button"
             onClick={() => navigate('/decks/new')}
-            className="icon-button border-2 border-dark text-dark hover:bg-surface"
+            className="icon-button bg-accent/10 text-accent hover:bg-accent/15"
             aria-label="Create a new deck"
             title="Create a new deck"
           >
-            <svg className="h-7 w-7" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+            <svg className="h-8 w-8" viewBox="0 0 32 32" fill="none" aria-hidden="true">
               <path
-                d="M14 4v20M4 14h20"
+                d="M16 6v20M6 16h20"
                 stroke="currentColor"
                 strokeWidth="3.5"
                 strokeLinecap="round"
