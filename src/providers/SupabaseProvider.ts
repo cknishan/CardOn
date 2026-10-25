@@ -1,4 +1,4 @@
-import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import { createClient, FunctionsHttpError, type SupabaseClient } from '@supabase/supabase-js'
 import type { CloudProvider, CloudUser, SyncPayload } from './CloudProvider'
 
 export class SupabaseProvider implements CloudProvider {
@@ -62,6 +62,30 @@ export class SupabaseProvider implements CloudProvider {
 
   async logout(): Promise<void> {
     await this.supabase.auth.signOut()
+    this.currentUser = null
+    this.notifyAuthListeners(null)
+  }
+
+  async deleteAccount(): Promise<void> {
+    await this.ensureUser()
+
+    const { error } = await this.supabase.functions.invoke('delete-account', {
+      method: 'POST',
+    })
+
+    if (error) {
+      if (error instanceof FunctionsHttpError) {
+        const details = (await error.context.json().catch(() => null)) as {
+          error?: unknown
+        } | null
+        if (typeof details?.error === 'string') {
+          throw new Error(details.error)
+        }
+      }
+      throw error
+    }
+
+    await this.supabase.auth.signOut({ scope: 'local' })
     this.currentUser = null
     this.notifyAuthListeners(null)
   }

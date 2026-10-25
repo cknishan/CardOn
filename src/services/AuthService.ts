@@ -17,6 +17,10 @@ export class AuthService {
     await this.provider.logout()
   }
 
+  async deleteAccount(): Promise<void> {
+    await this.provider.deleteAccount()
+  }
+
   getUser(): CloudUser | null {
     return this.provider.getUser()
   }

@@ -6,6 +6,7 @@ export interface AuthContextValue {
   isLoggedIn: boolean
   login: () => Promise<void>
   logout: () => Promise<void>
+  deleteAccount: () => Promise<void>
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null)

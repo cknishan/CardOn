@@ -24,8 +24,12 @@ function AuthProvider({ children, provider }: AuthProviderProps) {
     await auth.logout()
   }
 
+  const deleteAccount = async () => {
+    await auth.deleteAccount()
+  }
+
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn: !!user, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoggedIn: !!user, login, logout, deleteAccount }}>
       {children}
     </AuthContext.Provider>
   )

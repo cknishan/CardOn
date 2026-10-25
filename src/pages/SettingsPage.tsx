@@ -1,16 +1,21 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { db } from '../database/dexie'
 import { useAuth } from '../components/authContext'
+import GoogleSignInButton from '../components/GoogleSignInButton'
 import { SyncService } from '../services/SyncService'
 import { supabaseProvider } from '../providers/SupabaseProvider'
 
 function SettingsPage() {
   const navigate = useNavigate()
-  const { user, isLoggedIn, login, logout } = useAuth()
+  const { user, isLoggedIn, login, logout, deleteAccount } = useAuth()
   const [syncState, setSyncState] = useState<'idle' | 'syncing'>('idle')
   const [lastSynced, setLastSynced] = useState<string | null>(localStorage.getItem('lastSynced'))
   const [counts, setCounts] = useState({ decks: 0, cards: 0, sessions: 0 })
+  const [isAccountDeleteOpen, setIsAccountDeleteOpen] = useState(false)
+  const [accountDeleteConfirmation, setAccountDeleteConfirmation] = useState('')
+  const [accountDeleteState, setAccountDeleteState] = useState<'idle' | 'deleting'>('idle')
+  const [accountDeleteError, setAccountDeleteError] = useState('')
 
   useEffect(() => {
     async function load() {
@@ -109,15 +114,51 @@ function SettingsPage() {
     input.click()
   }
 
+  async function clearLocalData() {
+    await db.transaction('rw', db.decks, db.cards, db.studySessions, async () => {
+      await Promise.all([db.decks.clear(), db.cards.clear(), db.studySessions.clear()])
+    })
+    localStorage.removeItem('lastSynced')
+    setLastSynced(null)
+    setCounts({ decks: 0, cards: 0, sessions: 0 })
+  }
+
   async function handleDeleteAll() {
     if (window.confirm('Delete ALL decks, cards, and study history? This cannot be undone.')) {
       if (window.confirm('Are you sure? There is no undo.')) {
-        await db.decks.clear()
-        await db.cards.clear()
-        await db.studySessions.clear()
-        setCounts({ decks: 0, cards: 0, sessions: 0 })
+        await clearLocalData()
         navigate('/')
       }
+    }
+  }
+
+  async function handleDeleteAccount() {
+    if (accountDeleteConfirmation !== 'DELETE' || accountDeleteState === 'deleting') return
+
+    setAccountDeleteState('deleting')
+    setAccountDeleteError('')
+    let cloudAccountDeleted = false
+
+    try {
+      await deleteAccount()
+      cloudAccountDeleted = true
+      await clearLocalData()
+      navigate('/')
+    } catch (error) {
+      if (cloudAccountDeleted) {
+        localStorage.removeItem('lastSynced')
+        setLastSynced(null)
+        setAccountDeleteError(
+          'Your account was deleted, but local browser data could not be fully cleared. Use Delete All Local Data to try again.'
+        )
+      } else {
+        setAccountDeleteError(
+          'Account deletion failed. ' +
+            (error instanceof Error ? error.message : 'Please try again later.')
+        )
+      }
+    } finally {
+      setAccountDeleteState('idle')
     }
   }
 
@@ -240,34 +281,16 @@ function SettingsPage() {
                 </button>
               </>
             ) : (
-              <button
-                onClick={login}
-                className="surface-inset flex w-full items-center justify-between px-4 py-3 text-left transition hover:bg-border/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-              >
-                <div className="text-left">
-                  <p className="text-sm font-medium text-dark">Sign in with Google</p>
-                  <p className="text-xs text-muted">Sync your data across devices</p>
-                </div>
-                <svg
-                  className="w-5 h-5 text-muted"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-                  />
-                </svg>
-              </button>
+              <div className="surface-inset space-y-3 p-4">
+                <p className="text-xs text-muted">Sign in to sync your data across devices.</p>
+                <GoogleSignInButton onClick={login} />
+              </div>
             )}
           </div>
         </section>
 
         <section className="surface-card mb-5 p-6">
-          <h2 className="text-base font-semibold text-dark mb-4">About</h2>
+          <h2 className="text-base font-semibold text-dark mb-4">App Information</h2>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-muted">Version</span>
@@ -286,24 +309,145 @@ function SettingsPage() {
               <span className="text-dark font-medium">{counts.sessions}</span>
             </div>
           </div>
-          <a
-            href="https://github.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block mt-4 text-xs text-muted hover:text-primary transition"
-          >
-            Feedback / Support ↗
-          </a>
+        </section>
+
+        <section className="surface-card mb-5 p-6">
+          <h2 className="text-base font-semibold text-dark mb-4">CardOn Information</h2>
+          <nav aria-label="CardOn information" className="space-y-2">
+            {[
+              {
+                to: '/about',
+                label: 'About CardOn',
+                description: 'Learn about CardOn and fast bulk import',
+              },
+              {
+                to: '/privacy',
+                label: 'Privacy Policy',
+                description: 'See how CardOn handles your information',
+              },
+              {
+                to: '/terms',
+                label: 'Terms of Service',
+                description: 'Read the terms for using CardOn',
+              },
+            ].map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="surface-inset flex items-center justify-between gap-4 px-4 py-3 transition hover:bg-border/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              >
+                <span>
+                  <span className="block text-sm font-medium text-dark">{item.label}</span>
+                  <span className="mt-0.5 block text-xs text-muted">{item.description}</span>
+                </span>
+                <svg
+                  className="h-4 w-4 shrink-0 text-muted"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  aria-hidden="true"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            ))}
+          </nav>
         </section>
 
         <section className="surface-card border-danger/30 p-6">
           <h2 className="text-base font-semibold text-danger mb-4">Danger Zone</h2>
-          <p className="text-xs text-muted mb-4">
-            Permanently delete all your data. This cannot be undone.
-          </p>
-          <button onClick={handleDeleteAll} className="button-base button-danger w-full">
-            Delete All Data
-          </button>
+
+          {accountDeleteError && (
+            <p
+              className="mb-4 rounded-lg bg-again-bg px-4 py-3 text-sm text-again-text"
+              role="alert"
+            >
+              {accountDeleteError}
+            </p>
+          )}
+
+          <div>
+            <h3 className="text-sm font-semibold text-dark">Local browser data</h3>
+            <p className="mb-4 mt-1 text-xs leading-5 text-muted">
+              Delete decks, cards, study history, and sync information stored in this browser. Your
+              signed-in account and cloud data will remain.
+            </p>
+            <button
+              type="button"
+              onClick={handleDeleteAll}
+              disabled={accountDeleteState === 'deleting'}
+              className="button-base button-danger-outline w-full"
+            >
+              Delete All Local Data
+            </button>
+          </div>
+
+          {isLoggedIn && (
+            <div className="mt-6 border-t border-danger/20 pt-6">
+              <h3 className="text-sm font-semibold text-danger">Account and all data</h3>
+              <p className="mt-1 text-xs leading-5 text-muted">
+                Permanently delete your CardOn account, synchronized cloud data, and all data stored
+                in this browser. This cannot be undone.
+              </p>
+
+              {!isAccountDeleteOpen ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsAccountDeleteOpen(true)
+                    setAccountDeleteConfirmation('')
+                    setAccountDeleteError('')
+                  }}
+                  className="button-base button-danger mt-4 w-full"
+                >
+                  Delete Account
+                </button>
+              ) : (
+                <div className="mt-4 rounded-xl border border-danger/30 bg-again-bg/40 p-4">
+                  <label htmlFor="deleteAccountConfirmation" className="block text-sm text-dark">
+                    Type <strong>DELETE</strong> to confirm
+                  </label>
+                  <input
+                    id="deleteAccountConfirmation"
+                    type="text"
+                    value={accountDeleteConfirmation}
+                    onChange={(event) => setAccountDeleteConfirmation(event.target.value)}
+                    disabled={accountDeleteState === 'deleting'}
+                    autoComplete="off"
+                    spellCheck={false}
+                    className="field-control mt-2 bg-surface"
+                  />
+                  <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                    <button
+                      type="button"
+                      onClick={handleDeleteAccount}
+                      disabled={
+                        accountDeleteConfirmation !== 'DELETE' || accountDeleteState === 'deleting'
+                      }
+                      className="button-base button-danger flex-1"
+                    >
+                      {accountDeleteState === 'deleting'
+                        ? 'Deleting Account...'
+                        : 'Permanently Delete Account'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsAccountDeleteOpen(false)
+                        setAccountDeleteConfirmation('')
+                        setAccountDeleteError('')
+                      }}
+                      disabled={accountDeleteState === 'deleting'}
+                      className="button-base button-secondary flex-1"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </section>
       </div>
     </div>
