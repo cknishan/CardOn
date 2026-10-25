@@ -4,6 +4,8 @@
 
 [View the live application](https://card-on.netlify.app/)
 
+![About CardOn Image](public/CardOnBanner.png)
+
 ## Description
 
 CardOn is designed for students, interview candidates, and self-directed learners who want a focused way to turn questions and answers into repeatable study sessions. Users can organize flashcards into decks, see what is due, review cards using four recall ratings, **import batches of cards from a simple Markdown-like format**, and back up their browser data as JSON.
